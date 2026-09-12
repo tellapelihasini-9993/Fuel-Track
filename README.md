@@ -1,142 +1,277 @@
-# ⛽ FuelTrack — Doorstep Fuel Delivery & Operations Command Center
+# ⛽ FuelTrack — Complete Beginner's Guide & Project Documentation
 
-A zero-hidden-fee doorstep fuel delivery and central operations command platform featuring 100% Pure Java SE multi-page architecture, separated customer & station owner dashboards, live GPS tracking, IoT dispensing simulation, and a 16-slide PowerPoint presentation (`FuelTrack_Complete_Project_Presentation.pptx`).
+> **Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Command Center**  
+> Powered by **100% Pure Java SE** Multi-Page Architecture, Real-Time Satellite Telematics, and Separated Customer & Station Owner Dashboards.
 
-[![Zero Hidden Fees](https://img.shields.io/badge/Platform%20Markup-₹0.00-10b981.svg)](https://github.com)
+[![Zero Hidden Fees](https://img.shields.io/badge/Platform%20Markup-%E2%82%B90.00-10b981.svg)](https://github.com)
 [![PESO-Ready Workflow](https://img.shields.io/badge/PESO-Ready%20Workflow-ff6b00.svg)](https://github.com)
 [![100% Pure Java SE](https://img.shields.io/badge/Backend-100%25%20Pure%20Java%20SE-f59e0b.svg)](https://github.com)
 [![Separated Cockpits](https://img.shields.io/badge/Architecture-Separated%20Cockpits-0ea5e9.svg)](https://github.com)
-
-[![Zero Hidden Fees](https://img.shields.io/badge/Platform%20Markup-₹0.00-10b981.svg)](https://github.com)
-[![PESO-Ready Workflow](https://img.shields.io/badge/PESO-Ready%20Workflow-ff6b00.svg)](https://github.com)
-[![Full-Stack Real-Time](https://img.shields.io/badge/Tech-React%20%7C%20Node.js%20%7C%20PostgreSQL%20%7C%20Socket.IO-00f0ff.svg)](https://github.com)
-
-**FuelTrack** is a production-grade full-stack real-time web application engineered for zero-hidden-fee on-demand doorstep fuel delivery and central operations command. Backed by a true relational PostgreSQL database with Socket.IO telemetry and 5 distinct role-based cockpits.
+[![Verified CSAT](https://img.shields.io/badge/CSAT-4.95%20%2F%205.0%20%E2%98%85-eab308.svg)](https://github.com)
 
 ---
 
-## 💎 Core Business Concept & Transparent Pricing
-
-FuelTrack delivers certified Petrol (MS), Diesel (HSD), and CNG directly to private vehicles, logistics fleets, backup generators, agricultural harvesters, and construction machinery with **zero platform markup**.
-
-### 📐 Deterministic Zero-Markup Formula:
-$$\mathbf{Total\ Amount} = (\mathbf{Litres} \times \mathbf{Official\ Fuel\ Rate}) + \mathbf{₹50\ Flat\ Delivery\ Fee} + \mathbf{₹0\ Platform\ Markup}$$
-
-#### Example (Standard 35L Car Top-Up):
-- $35\text{ Litres} \times ₹104.21\text{ (Official Mumbai Petrol Rate)} = ₹3,647.35$
-- Flat Doorstep Delivery Fee: $₹50.00$
-- Platform Surge Markup: **$₹0.00$**
-- **Final Payable Total = $₹3,697.35$**
-
-> **Historical Rate Immutability**: The exact official government fuel rate active at the moment of order creation is permanently saved with the order record and never recalculates with future rate updates.
+## 📑 Table of Contents
+1. [What is FuelTrack? (The Big Picture)](#1-what-is-fueltrack-the-big-picture)
+2. [The Transparent Zero-Markup Pricing Model](#2-the-transparent-zero-markup-pricing-model)
+3. [System Architecture (How It Works Under the Hood)](#3-system-architecture-how-it-works-under-the-hood)
+4. [Step-by-Step: How to Run the Project (For Beginners)](#4-step-by-step-how-to-run-the-project-for-beginners)
+5. [Demo Accounts & 1-Click Fast Login Cheatsheet](#5-demo-accounts--1-click-fast-login-cheatsheet)
+6. [Detailed Walkthrough of Each Page](#6-detailed-walkthrough-of-each-page)
+   - [A. Cyber-Glassmorphic Login Portal (`login.html`)](#a-cyber-glassmorphic-login-portal-loginhtml)
+   - [B. Dedicated Customer Portal (`user-dashboard.html`)](#b-dedicated-customer-portal-user-dashboardhtml)
+   - [C. Station Owner Master Operations Cockpit (`owner-dashboard.html`)](#c-station-owner-master-operations-cockpit-owner-dashboardhtml)
+7. [Repository File Map (What Each File Does)](#7-repository-file-map-what-each-file-does)
+8. [Beginner's Test Tour (8 Things to Try Right Now)](#8-beginners-test-tour-8-things-to-try-right-now)
+9. [PowerPoint Presentation Deck Information](#9-powerpoint-presentation-deck-information)
 
 ---
 
-## 🚀 Quick Start (Single Command)
+## 1. 💡 What is FuelTrack? (The Big Picture)
 
-### 1. Install dependencies:
-```bash
-npm install
-cd client && npm install && cd ..
+**FuelTrack** is an IoT-enabled doorstep fuel delivery and petroleum depot management system. 
+
+### ⛽ The Industry Problem
+- **Time Lost in Queues**: Car owners, fleet drivers, and generator operators waste hours driving to and waiting in line at traditional petrol pumps.
+- **Bulk Refueling Headaches**: Hospitals, luxury high-rises, and IT data centers rely on backup diesel generators (DG sets). Transporting fuel in jerry cans or barrels is illegal, unsafe, and leaks.
+- **Hidden Aggregator Fees**: Existing delivery apps tack on surge pricing, hidden platform percentages, or distance markups.
+
+### 🛡️ The FuelTrack Solution
+- **Doorstep Convenience**: Certified mobile dispenser bowsers (mini-tankers) arrive directly at the customer's vehicle bay or generator room.
+- **PESO Safety Standards**: 100% compliant with the Petroleum and Explosives Safety Organisation (PESO) — ATEX non-sparking flow-meters, static grounding clamps, and tamper-sealed hydrometer density tests.
+- **Direct-to-Owner Feedback Loop**: Customers can raise grievance tickets directly to station owners and rate deliveries in real time.
+
+---
+
+## 2. 💎 The Transparent Zero-Markup Pricing Model
+
+FuelTrack operates on a strictly transparent, deterministic pricing equation:
+
+$$\mathbf{Total\ Payable} = (\mathbf{Litres} \times \mathbf{Official\ Govt\ Fuel\ Rate}) + \mathbf{₹50.00\ Flat\ Delivery\ Fee} + \mathbf{₹0.00\ Platform\ Markup}$$
+
+### Real-World Example (35L Car Fill in Mumbai):
+- $35\text{ Litres} \times ₹104.21\text{ (Official IOCL/BPCL Petrol Rate)} = ₹3,647.35$
+- Flat Doorstep Delivery Fee = $₹50.00$
+- Platform Markup / Surge = **$₹0.00$**
+- **Total Amount Paid = $₹3,697.35$**
+
+> **Rate Immutability Guarantee**: The exact government rate active at the millisecond an order is placed is frozen into the order ledger and tax invoice, immune to future rate fluctuations.
+
+---
+
+## 3. 🏛️ System Architecture (How It Works Under the Hood)
+
+The entire backend and desktop application is written in **100% Pure Java SE (`FuelTrackApp.java`)**:
+
+```
+                       ┌──────────────────────────────────────────────┐
+                       │          FuelTrackApp.jar (Java SE)          │
+                       │  • Embedded HTTP Web Server (Port 5000)      │
+                       │  • Native Java Swing Desktop Window          │
+                       │  • In-Memory Relational State & Telemetry    │
+                       └──────────────┬────────────────┬──────────────┘
+                                      │                │
+                     HTTP / JSON APIs │                │ Native GUI
+                                      ▼                ▼
+         ┌──────────────────────────────────┐   ┌──────────────────────────────────┐
+         │     Modern Multi-Page Web App    │   │      Desktop Swing Application   │
+         │  • login.html                    │   │  • Login Card Preview            │
+         │  • user-dashboard.html           │   │  • Customer Bay Window           │
+         │  • owner-dashboard.html          │   │  • Owner Cockpit Window          │
+         └──────────────────────────────────┘   └──────────────────────────────────┘
 ```
 
-### 2. Run the Full-Stack Application:
-```bash
-npm run dev
+- **Zero Heavy Frameworks Required**: No complex Node.js or database server installations needed to run the core engine.
+- **Embedded Web Engine**: Serves static pages and JSON APIs (`/api/complaints`, `/api/feedback`, `/api/orders`, `/api/tankers`, `/api/rates`) via Java's native `com.sun.net.httpserver.HttpServer`.
+- **Dual Interface**: Use either the web browser interface or the native Java desktop window.
+
+---
+
+## 4. 🚀 Step-by-Step: How to Run the Project (For Beginners)
+
+### Step 1: Verify Java Installation
+Open your terminal (PowerShell or Command Prompt) and check if Java is installed:
+```powershell
+java -version
 ```
-- 🌐 **Frontend URL**: `http://localhost:5173` (or `http://localhost:5000`)
-- 📡 **Backend API & WebSocket Server**: `http://localhost:5000`
+*(Requires Java 17 or higher. If not installed, download the free Oracle JDK or OpenJDK).*
 
-### 3. Run Automated Test Suite:
-```bash
-npm test
+### Step 2: Start FuelTrack
+From the project folder, run the pre-packaged executable JAR:
+```powershell
+java -jar FuelTrackApp.jar
+```
+You will see the terminal banner:
+```
+============================================================================
+  FUELTRACK MULTI-PAGE COMMAND ENGINE (PURE JAVA SE)
+============================================================================
+✓ FuelTrack Multi-Page Web Engine LIVE at: http://localhost:5000
+✓ FuelTrack Multi-Page Desktop GUI Active!
+```
+
+### Step 3: Open in Your Web Browser
+Open any modern web browser and go to:
+- **Login Portal**: [http://localhost:5000/login.html](http://localhost:5000/login.html)
+- **Customer Portal**: [http://localhost:5000/user-dashboard.html?demo=true](http://localhost:5000/user-dashboard.html?demo=true)
+- **Station Owner Master Hub**: [http://localhost:5000/owner-dashboard.html?demo=true](http://localhost:5000/owner-dashboard.html?demo=true)
+
+### Step 4 (Optional): Recompiling from Java Source Code
+If you modify `FuelTrackApp.java`:
+```powershell
+# 1. Compile
+javac -encoding UTF-8 FuelTrackApp.java
+
+# 2. Package into JAR
+powershell -Command "Set-Content -Path 'manifest.txt' -Value 'Main-Class: FuelTrackApp`r`n'; jar cfm FuelTrackApp.jar manifest.txt *.class"
+
+# 3. Launch
+java -jar FuelTrackApp.jar
 ```
 
 ---
 
-## 👑 100% Pure Java SE Multi-Page Engine & VIP Demo Accounts
+## 5. 🔑 Demo Accounts & 1-Click Fast Login Cheatsheet
 
-The project includes an embedded **Pure Java SE Engine (`FuelTrackApp.java`)** with completely separated web dashboards and desktop GUI, featuring **All-Inclusive VIP Demo Accounts**:
+The project includes pre-populated demo credentials with rich mock data:
 
-### 🌟 VIP All-Access Demo Accounts (1-Click Instant Launch)
+| Role | Name | Email | Password | What You Can See & Do |
+| :--- | :--- | :--- | :--- | :--- |
+| **⭐ VIP Demo Customer** | **Vikram Malhotra** | `demo@fueltrack.io` | `demo123` | • Active live GPS delivery (`TK-101` moving, Worli ETA 9 mins).<br>• Doorstep recurring subscription for Mercedes GLS 450.<br>• Fuel spend & net savings analytics.<br>• 4 order invoices with QR codes.<br>• Direct-to-owner grievance tickets.<br>• 5-star delivery reviews. |
+| **👑 Master Owner Demo** | **Rajeshwar Singhania** | `demo.owner@fueltrack.io` | `demo123` | • Central Command HQ banner.<br>• 360° Fleet GPS radar & tanker telematics.<br>• 4 bulk storage tanks with ultrasonic level gauges.<br>• Customer grievance desk with retest/refund actions.<br>• CSAT wall with owner reply feature.<br>• Daily PESO compliance checklist & financial margins. |
+| **Original Station Owner** | **Sanjay Mehta** | `owner@fueltrack.io` | `password123` | Standard station owner view for HPCL Central Terminal #402. |
+| **Standard Customer** | **Ananya Deshmukh** | `customer@fueltrack.io` | `password123` | Standard customer account for Worli Sea Face with order booking slider. |
 
-| Demo Account | Login Email | Password | What's Included in the Demo Account |
-| :--- | :--- | :--- | :--- |
-| **⭐ VIP Demo Customer**<br>*(Vikram Malhotra)* | `demo@fueltrack.io` | `demo123` | • **Live In-Transit GPS Radar**: Active order `FT-ORD-2026-9901` (45L Petrol) with live moving tanker, ETA counter, driver info, and emergency cancel.<br>• **Doorstep Recurring Subscription**: 40L Petrol every Monday 07:30 AM for Mercedes GLS 450.<br>• **Fuel Spend & Savings Analytics**: 180L delivered, ₹17,842.50 spent, ₹1,250 net savings.<br>• **Complete Order History**: 4 diverse past orders with downloadable GST tax invoices & QR codes.<br>• **Direct-to-Owner Grievance Redressal**: 3 active/resolved tickets with real-time station owner notes & timestamps.<br>• **Verified Customer Reviews**: Rate deliveries and view published verified reviews. |
-| **👑 Master Station Owner Demo**<br>*(Rajeshwar Singhania)* | `demo.owner@fueltrack.io` | `demo123` | • **Full Station Command Access**: Manage fuel stock, underground tank gauges, and PESO alerts.<br>• **Live Customer Grievance Desk**: Real-time customer tickets with 1-click actions (*Call Customer, Schedule Purity Retest, Approve Credit/Refund, Reroute Tanker*).<br>• **Live Fleet Telematics**: Active mobile tanker units, driver status, speed, and GPS coordinates.<br>• **Customer Satisfaction (CSAT) Wall**: Real-time customer ratings and feedback feed.<br>• **Rate Control & Settings**: Instant adjustments for rates, delivery fees, and emergency bypass. |
-
-### 🚀 Instant Access URLs
-
-- **Login Page with 1-Click VIP Launchers**: [http://localhost:5000/login.html](http://localhost:5000/login.html)
-- **Direct VIP Customer Dashboard**: [http://localhost:5000/user-dashboard.html?demo=true](http://localhost:5000/user-dashboard.html?demo=true)
-- **Direct VIP Master Owner Cockpit**: [http://localhost:5000/owner-dashboard.html?demo=true](http://localhost:5000/owner-dashboard.html?demo=true)
+> **Pro Tip**: On `login.html`, simply click either gold button in the **⭐ VIP ALL-ACCESS DEMO ACCOUNTS** card at the bottom to jump right into the demo accounts with 1 click!
 
 ---
 
-## 🛠️ Technology Architecture
+## 6. 🖥️ Detailed Walkthrough of Each Page
 
-- **Frontend**: React 19 with TypeScript, Vite, Tailwind CSS, Lucide React, Recharts, Canvas / CSS Radar Grid.
-- **Backend**: Node.js, Express, Socket.IO.
-- **Database**: PostgreSQL (backed by `@electric-sql/pglite` embedded pure-Postgres engine for immediate zero-config setup with seamless `DATABASE_URL` / standard Postgres support).
-- **Security & Validation**: JWT Authentication, bcrypt password hashing, Zod schema validation on every API endpoint.
-- **Real-Time Engine**: Socket.IO WebSocket channels for GPS telemetry, order state updates, dispensing ticks, inventory deductions, and safety alerts.
-- **Compliance**: PESO-ready workflow with digital density/purity test certificate reference attached to every generated invoice.
-
----
-
-## 🗄️ Database Schema (17 Relational Tables)
-
-1. `users`: Operator profiles and authentication (`customer`, `driver`, `station_owner`, `dispatcher`, `admin`).
-2. `vehicles`: Saved vehicles with fuel type and tank capacities.
-3. `depots`: Petro depots with coordinates and addresses.
-4. `tankers`: Mobile refuelling units with telematics, coordinates, capacity, and temp readings.
-5. `drivers`: Driver licensing, assignment, and ratings.
-6. `fuel_tanks`: Bulk storage tanks with ultrasonic sensor statuses and $<25\%$ low-stock thresholds.
-7. `fuel_rates`: Official daily government rates with zero platform markup.
-8. `orders`: Order transactions with immutable snapshot of fuel rate, fee breakdown, and status.
-9. `order_status_history`: Linear 6-stage lifecycle timeline.
-10. `dispatches`: Tanker dispatch assignments.
-11. `gps_locations`: GPS coordinate telematics history stream.
-12. `dispensing_records`: IoT hardware dispensing records with flow rate and $\pm 0.01\%$ accuracy.
-13. `inventory_transactions`: Double-entry depot inventory accounting ledger.
-14. `payments`: Mock payment records (UPI QR, Card, POD).
-15. `invoices`: Sequential tax invoices (`FT-INV-YYYY-XXXX`) with density purity certificate.
-16. `safety_checks`: Emergency shut-off and SOS incident logs.
-17. `audit_logs`: Immutable PESO-ready audit trail with before/after details.
+### A. 🎨 Cyber-Glassmorphic Login Portal (`login.html`)
+- **Left Panel ("Dashboard Sneak Peek")**: An interactive preview window allowing users to toggle between `👤 Customer View` (showing live delivery speed, ETA, and tanker telemetry) and `👑 Owner Cockpit` (showing fleet status, storage reserves, and open tickets) before logging in.
+- **Right Panel (Authentication Console)**:
+  - Role switcher toggle between Customer Hub and Station Owner.
+  - Floating inputs with password reveal eye button.
+  - **1-Click VIP Demo Launchers** for instant one-touch entry.
+- **Background**: Interactive HTML5 particle constellation canvas with ambient neon glow.
 
 ---
 
-## 📡 Main API Endpoints
-
-- `POST /api/auth/login` - Authenticate user & issue JWT
-- `POST /api/auth/register` - Create new customer profile
-- `POST /api/auth/quick-login` - 1-Click zero-friction demo login for any role
-- `GET /api/fuel-rates` - List official rates with zero-markup formula
-- `GET /api/fuel-rates/calculate` - Calculate exact price for volume & grade
-- `POST /api/orders` - Place order using server-side rate calculation
-- `GET /api/orders` - Retrieve role-filtered or all orders
-- `PATCH /api/orders/:id/status` - Transition delivery lifecycle state
-- `POST /api/orders/:id/assign-tanker` - Assign nearest mobile tanker unit
-- `GET /api/tankers` - List tankers with live GPS coordinates and speed
-- `POST /api/tankers/:id/location` - Push manual/simulated GPS coordinates
-- `POST /api/tankers/:id/safety-alert` - Trigger emergency SOS alert
-- `GET /api/depots` - List depots with storage tank liquid levels
-- `POST /api/inventory/refill` - Create bulk procurement refill batch
-- `POST /api/inventory/demo-action` - Trigger demo tests (Dispense 500L, Auto Top-Up >95%, Low-Stock <25%)
-- `POST /api/dispensing/start` - Connect IoT hardware nozzle
-- `POST /api/dispensing/tick` - Stream live litres & amount counter (~45 L/min)
-- `POST /api/dispensing/complete` - Complete dispensing, deduct inventory, generate invoice
-- `GET /api/invoices/:id` - Fetch printable tax invoice with density cert
-- `GET /api/dashboard/analytics` - Fetch KPI metrics and Recharts datasets
-- `GET /api/audit-logs` - Query immutable PESO compliance audit trail
+### B. 👤 Dedicated Customer Portal (`user-dashboard.html`)
+- **Live In-Transit GPS Radar**:
+  - Live animated SVG radar showing mobile tanker `TK-101` traveling to the customer bay.
+  - Telemetry HUD: Speed (42.4 km/h), dynamic countdown ETA (11 mins), Pilot details (*Rajesh Kumar*), and delivery unlock PIN (`8 4 9 2`).
+  - Emergency **Cancel Order** button.
+- **Doorstep Recurring Fuel Subscription**:
+  - *Executive Weekly Fill*: 40L Petrol delivered every Monday at 07:30 AM for vehicle `MH-01-VIP-7777`.
+- **Fuel Spend & Net Savings Analytics**:
+  - Summarizes total litres pumped (180L), money spent (₹17,842.50), and estimated net savings (₹1,250.00).
+- **Multi-Order History & Tax Invoices**:
+  - 4 complete orders across Petrol, Diesel, and CNG.
+  - Click **View Tax Invoice** on any order to view an itemized GST invoice complete with digital QR verification code and density certificate reference.
+- **🚨 Direct-to-Owner Grievance Redressal**:
+  - Click **⚠️ Raise Open Grievance to Owner** to raise an issue regarding purity, meter auto-cutoff, or delays.
+  - The ticket is immediately routed to the Station Owner's cockpit with tracking code (e.g. `FT-TKT-2026-8860`).
+- **⭐ Verified Delivery Reviews**:
+  - Rate completed deliveries (1–5 stars) and write comments that instantly publish to the owner's CSAT wall.
 
 ---
 
-## 🧪 Testing & Verification Checklist
+### C. 👑 Station Owner Master Operations Cockpit (`owner-dashboard.html`)
+- **🛰️ Fleet GPS Radar Command**:
+  - Real-time animated radar display tracking all 3 mobile tankers across Mumbai.
+  - 1-Click transponder pinging, smart traffic re-routing, and **PESO Emergency Fleet E-STOP** shutoff.
+- **🏭 Depot Bulk Storage Reserves**:
+  - Ultrasonic liquid depth gauges for Petrol Tank 01, Diesel Tank 02, CNG Cascade, and Pune Reserve.
+  - 1-Click **Bulk Pipeline Refill** decanting trigger.
+- **📬 Customer Grievance Resolution Desk**:
+  - Filter tabs: `All Tickets (5)`, `Open (1)`, `Investigating (2)`, `Resolved (2)` plus instant search bar.
+  - **🔬 Retest**: Dispatches a mobile quality lab with a calibrated hydrometer to re-verify fuel density at 15°C.
+  - **💳 Instant UPI Refund**: Issues a direct refund credit to customer UPI ID.
+  - **📞 Call Customer**: Direct connection via owner telematics line.
+  - **✅ Mark Resolved**: Enters official resolution notes sent to the customer.
+- **⭐ Reviews & CSAT Intelligence Hub**:
+  - Overall CSAT score: **4.95 / 5.0 ★** across 148 deliveries (5-Star: 94%, 4-Star: 5%, 3-Star: 1%, NPS: +88).
+  - CSAT breakdown by product: Speed Petrol (4.96 ★), Diesel (4.94 ★), CNG (4.95 ★).
+  - **💬 Interactive Owner Reply**: Click **"Add Station Owner Reply"** on any review to publish an official station response with an imperial gold crown badge (`👑 Official Station Owner Response`).
+- **💰 Financial Margins & Daily PESO Safety Checklist**:
+  - Accounting ledger: Gross Daily Sales (₹1,84,650.00), Wholesale Bulk Fuel Cost (-₹1,58,200.00), Delivery Fee Revenue (+₹14,200.00), Net Station Operating Margin (+₹26,450.00 / 14.3%).
+  - Statutory daily safety inspection checklist with a **Sign & Certify Daily PESO Audit** button.
+- **🏷️ Official Rates Management**:
+  - Instant adjustments for government fuel rates and delivery fees.
 
-- [x] **Zero-Markup Formula**: Tested with 35L ($35 \times 104.21 + 50 = ₹3,697.35$) and volume limits (5L–200L).
-- [x] **6-Stage Order Progression**: Verified linear lifecycle (`Order Verified` $\rightarrow$ `Tanker Assigned` $\rightarrow$ `In Transit` $\rightarrow$ `Arrived` $\rightarrow$ `Dispensing` $\rightarrow$ `Completed`).
-- [x] **Real-time GPS Fleet Radar**: Simulated background broadcaster pulses location updates every 3 seconds.
-- [x] **IoT Dispensing Simulator**: Calibrated $\sim 45\text{ L/min}$ flow with digital LED screen, temperature readout, and auto inventory update.
-- [x] **Multi-Depot Inventory & Low-Stock Alerts**: Automatic $<25\%$ safety alert and interactive demo triggers.
-- [x] **PESO Compliance & Invoicing**: Downloadable tax invoice with density cert and tamper-evident audit logs.
+---
+
+## 7. 📁 Repository File Map (What Each File Does)
+
+| File / Folder | Role & Description |
+| :--- | :--- |
+| [`FuelTrackApp.java`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/FuelTrackApp.java) | **Core Pure Java SE Backend & GUI**: Single-file master application containing the embedded HTTP server, REST APIs, in-memory database, seed demo data, and Swing GUI. |
+| [`FuelTrackApp.jar`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/FuelTrackApp.jar) | **Compiled Executable JAR**: Runnable binary that serves the web portals and displays the desktop GUI window. |
+| [`login.html`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/login.html) | **Login Web Portal**: Dual-column glassmorphic auth page with interactive sneak-peek dashboard preview and 1-click VIP demo launchers. |
+| [`user-dashboard.html`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/user-dashboard.html) | **Customer Portal**: Dedicated standalone page for customers featuring live GPS radar, subscription cards, tax invoices, grievances, and feedback. |
+| [`owner-dashboard.html`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/owner-dashboard.html) | **Station Owner Cockpit**: Dedicated standalone page for station owners featuring fleet radar, bulk storage, complaints desk, reviews with owner replies, and financials. |
+| [`FuelTrack_Complete_Project_Presentation.pptx`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/FuelTrack_Complete_Project_Presentation.pptx) | **PowerPoint Presentation**: 16-slide professional slide deck covering the business model, PESO safety compliance, architecture, and roadmap. |
+| [`README.md`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/README.md) | **Master Documentation**: Complete beginner's guide and reference manual (this document). |
+| [`.gitignore`](file:///c:/Users/udayk/OneDrive/Documents/Fuleproject/.gitignore) | Git exclusion rules for clean repository state. |
+
+---
+
+## 8. 🧪 Beginner's Test Tour (8 Things to Try Right Now)
+
+Follow these 8 steps to experience the complete functionality of FuelTrack:
+
+1. **Launch the Demo Customer**:
+   - Open [http://localhost:5000/login.html](http://localhost:5000/login.html).
+   - Scroll to the gold card at the bottom and click **⭐ VIP Demo Customer (Vikram Malhotra)**.
+2. **Observe the Moving Tanker**:
+   - On the customer dashboard, watch tanker `TK-101` pulsing and moving toward the customer bay on the live radar.
+3. **Inspect a Digital Invoice**:
+   - Scroll down to the **Order History & Certified Invoices** table.
+   - Click **View Invoice** on order `#FT-ORD-2026-9901` to see the itemized GST breakdown and verification QR code.
+4. **Raise a Grievance Ticket**:
+   - Click **⚠️ Raise Grievance to Owner** in the navbar.
+   - Select *Density / Purity Suspicion*, enter a note, and click Submit. Note the generated ticket number.
+5. **Switch to the Station Owner Cockpit**:
+   - Open [http://localhost:5000/owner-dashboard.html?demo=true](http://localhost:5000/owner-dashboard.html?demo=true).
+6. **Act on the Complaint**:
+   - Click the **📬 Customer Grievance Desk** tab.
+   - Click **Retest** to dispatch a quality inspector, or **Resolve** to enter owner resolution notes.
+7. **Reply to a Customer Review**:
+   - Click the **⭐ Reviews & CSAT Wall** tab.
+   - On Vikram Malhotra's review, click **Add Station Owner Reply**, type a message, and click OK. Observe the official crown reply badge appear immediately.
+8. **Inspect Financial Margins & Safety**:
+   - Click the **💰 Revenue & Safety Audit** tab to review the daily operating profit margin (+₹26,450.00) and click **Sign & Certify Daily PESO Audit**.
+
+---
+
+## 9. 📊 PowerPoint Presentation Deck Information
+
+The repository includes a ready-to-present PowerPoint deck:
+- **File**: `FuelTrack_Complete_Project_Presentation.pptx`
+- **Slide Count**: 16 professional slides.
+- **Topics Covered**:
+  1. Executive Summary & Vision
+  2. Industry Problem (Pump queues & hazardous jerry cans)
+  3. The Zero-Markup Pricing Model
+  4. PESO Safety & Regulatory Compliance
+  5. Multi-Page Architecture (Separated Portals)
+  6. Live GPS Fleet Radar Telematics
+  7. Bulk Depot Storage & Ultrasonic Gauging
+  8. IoT Dispensing & ATEX Calibration
+  9. Customer Grievance Redressal Pipeline
+  10. Customer Satisfaction (CSAT) Intelligence
+  11. Revenue & Financial Unit Economics
+  12. Mobile Bowser Specifications (Tata, Ashok Leyland, BharatBenz)
+  13. Security, Density Certificates & Digital Invoicing
+  14. Target Customer Segments (Residential, Fleet, IT SEZ, Agriculture)
+  15. Growth Roadmap & Scale Strategy
+  16. Q&A and Demo Access URLs
+
+---
+
+## 💬 Summary & Need Help?
+- **Backend Language**: 100% Pure Java SE (JDK 17+).
+- **Default Port**: `5000` (e.g. `http://localhost:5000/login.html`).
+- **Execution Command**: `java -jar FuelTrackApp.jar`.
