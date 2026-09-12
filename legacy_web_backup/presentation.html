@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuelTrack - Full Project Presentation Slides (PPT)</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts: Orbitron, Plus Jakarta Sans, Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #070b14;
+      color: #f8fafc;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    .font-mono-tech {
+      font-family: 'Orbitron', monospace;
+    }
+    .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Screen Slide Deck Layout */
+    .slide-deck-viewport {
+      min-height: calc(100vh - 70px);
+      width: 100vw;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 2rem;
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 2rem 2.5rem;
+    }
+
+    .slide.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Cyber Glass Cards */
+    .cyber-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .cyber-card.highlight {
+      border-color: rgba(255, 107, 0, 0.45);
+      box-shadow: 0 0 30px rgba(255, 107, 0, 0.15);
+    }
+
+    .cyber-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+    }
+
+    /* Progress bar */
+    .progress-bar-fill {
+      transition: width 0.3s ease;
+    }
+
+    /* Glowing Orbs */
+    .ambient-orb {
+      position: fixed;
+      border-radius: 9999px;
+      filter: blur(150px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Notes Drawer */
+    .notes-drawer {
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Table styles */
+    .ppt-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.825rem;
+    }
+    .ppt-table th {
+      background: rgba(30, 41, 59, 0.9);
+      color: #94a3b8;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ppt-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+    .ppt-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* PRINT / PDF EXPORT STYLES (Enables clean multi-page PPT printing) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        overflow: visible !important;
+      }
+      header, footer, .ambient-orb, #slideJumpModal, .no-print {
+        display: none !important;
+      }
+      .slide-deck-viewport {
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      .slide {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        padding: 2.5rem !important;
+        max-width: 100% !important;
+      }
+      .cyber-card {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+      .text-white {
+        color: #0f172a !important;
+      }
+      .text-slate-300, .text-slate-400 {
+        color: #475569 !important;
+      }
+      .bg-slate-900, .bg-slate-950 {
+        background: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+
+  <!-- Ambient Glow Backgrounds -->
+  <div class="ambient-orb top-[-10%] left-1/4 w-[550px] h-[550px] bg-orange-500/15"></div>
+  <div class="ambient-orb bottom-[-10%] right-1/4 w-[650px] h-[650px] bg-cyan-500/15"></div>
+  <div class="ambient-orb top-1/3 right-10 w-[400px] h-[400px] bg-emerald-500/10"></div>
+
+  <!-- Top Presentation Header Controls -->
+  <header class="h-[65px] bg-slate-950/90 backdrop-blur-xl border-b border-white/10 px-6 flex justify-between items-center sticky top-0 z-50 no-print">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+        <i class="fas fa-gas-pump text-base"></i>
+      </div>
+      <div>
+        <h1 class="font-heading font-black text-white text-base tracking-tight leading-tight">
+          Fuel<span class="text-orange-500">Track</span> <span class="text-xs text-slate-400 font-normal">| Full Project Master Deck</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Quick Slide Jump Button -->
+      <button onclick="openSlideJumpModal()" class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-mono-tech text-cyan-400 transition" title="Click to view all slides">
+        <i class="fas fa-list-ul"></i>
+        <span id="slideCounterText">SLIDE 01 / 16</span>
+      </button>
+
+      <!-- Speaker Notes Toggle -->
+      <button onclick="toggleSpeakerNotes()" id="notesToggleBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 hover:text-white border border-white/10 flex items-center gap-1.5 transition" title="Toggle Presenter Speaker Notes (N)">
+        <i class="fas fa-comment-dots text-amber-400"></i>
+        <span class="hidden sm:inline">Notes</span>
+      </button>
+
+      <!-- Print / Export to PDF -->
+      <button onclick="window.print()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 hover:text-white border border-white/10 flex items-center gap-1.5 transition" title="Print or Save All Slides as PDF">
+        <i class="fas fa-file-pdf text-rose-400"></i>
+        <span class="hidden sm:inline">Export PDF</span>
+      </button>
+
+      <!-- Prev / Next Navigation -->
+      <div class="flex items-center gap-1.5">
+        <button onclick="prevSlide()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition border border-white/10 hover:border-orange-500" title="Previous Slide (Left Arrow)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button onclick="nextSlide()" class="w-9 h-9 rounded-xl bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center transition shadow-lg shadow-orange-500/30" title="Next Slide (Right Arrow or Space)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button onclick="toggleFullScreen()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition border border-white/10" title="Toggle Fullscreen (F)">
+          <i class="fas fa-expand"></i>
+        </button>
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-lg shadow-emerald-600/30 flex items-center gap-1.5 transition ml-1">
+          <i class="fas fa-desktop"></i> <span class="hidden md:inline">Open Live App</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Slide Viewport -->
+  <main class="slide-deck-viewport z-10">
+
+    <!-- ==================== SLIDE 1: TITLE & COVER ==================== -->
+    <section class="slide active" id="slide-1">
+      <div class="max-w-4xl mx-auto text-center py-6">
+        <div class="cyber-badge bg-orange-500/15 text-orange-400 border border-orange-500/30 mb-6">
+          <i class="fas fa-bolt"></i> PESO Certified Smart Fuel Logistics System
+        </div>
+        <h1 class="font-heading text-5xl md:text-7xl font-black text-white tracking-tight mb-4 leading-tight">
+          Fuel<span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500">Track</span>
+        </h1>
+        <h2 class="text-xl md:text-2xl font-semibold text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+          Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Command Center
+        </h2>
+        <p class="text-sm text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          An end-to-end intelligent energy supply platform bridging retail vehicle refuelling, commercial fleets, and stationary power generator logistics with computerized IoT flow meters and live GPS telematics.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-left max-w-4xl mx-auto mb-8">
+          <div class="cyber-card p-4">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Domain</span>
+            <strong class="text-white text-sm">Smart Energy Logistics</strong>
+          </div>
+          <div class="cyber-card p-4">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pricing Model</span>
+            <strong class="text-emerald-400 text-sm">₹0 Hidden Surcharges</strong>
+          </div>
+          <div class="cyber-card p-4">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Delivery Fee</span>
+            <strong class="text-cyan-400 text-sm">Flat ₹50 Standard</strong>
+          </div>
+          <div class="cyber-card p-4">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tech Stack</span>
+            <strong class="text-amber-400 text-sm">Node.js • Cyber-Glass</strong>
+          </div>
+        </div>
+
+        <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+          <strong>🎙️ Speaker Talking Points:</strong> Good morning/afternoon everyone. Today, we present FuelTrack, an on-demand doorstep fuel delivery platform built to eliminate petrol pump lines, avoid fuel emergency strandings, and guarantee 100% price transparency.
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2: EXECUTIVE SUMMARY ==================== -->
+    <section class="slide" id="slide-2">
+      <div class="mb-6">
+        <div class="cyber-badge bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 mb-2">
+          <i class="fas fa-compass"></i> Executive Summary
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Project Vision & Core Objectives</h2>
+        <p class="text-xs text-slate-400">Complete overview of the product vision, market rationale, and delivery pillars</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-lg">
+            <i class="fas fa-bullseye"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">1. The Core Purpose</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Provide consumers, logistics operators, and facility managers with a dependable digital pipeline to book certified petrol, diesel, and CNG directly to their parked location.
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1.5 pt-2">
+            <li>✔ On-demand & scheduled dispatches</li>
+            <li>✔ Verified PESO quality density seals</li>
+            <li>✔ No retail fuel price markups</li>
+          </ul>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3 highlight">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fas fa-shield-check"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">2. Transparent Economics</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Eliminates high 20%–40% third-party convenience surcharges. FuelTrack enforces a strict zero-markup formula: base fuel at official Indian Oil/HPCL daily rates + flat ₹50 safety delivery fee.
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1.5 pt-2">
+            <li>✔ $Total = (Litres \times Rate) + Flat\ ₹50$</li>
+            <li>✔ Itemized certified tax invoice</li>
+            <li>✔ Multi-channel UPI/Card/COD payments</li>
+          </ul>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg">
+            <i class="fas fa-satellite-dish"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">3. End-to-End Telematics</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Full operational transparency from refinery depots to end consumers through live GPS radar screens, ultrasonic bulk storage visualizers, and IoT flow meter simulators.
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1.5 pt-2">
+            <li>✔ 360° fleet radar telematics HUD</li>
+            <li>✔ 3D fluid wave cylinder tanks</li>
+            <li>✔ Synthesized Web Audio engine</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> FuelTrack operates on three pillars: reliable doorstep access, guaranteed zero-markup pricing, and deep telematics that give complete visibility to customers, franchise station owners, and central network administrators.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3: PROBLEM STATEMENT ==================== -->
+    <section class="slide" id="slide-3">
+      <div class="mb-6">
+        <div class="cyber-badge bg-rose-500/15 text-rose-400 border border-rose-500/30 mb-2">
+          <i class="fas fa-triangle-exclamation"></i> Problem Analysis
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Critical Inefficiencies in Traditional Fuel Retail</h2>
+        <p class="text-xs text-slate-400">Why current petrol pump infrastructure fails consumers, commercial fleets, and standby power</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 border-rose-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-traffic-light"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">1. Severe Congestion & Idle Loss</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Urban petrol stations suffer from severe bottleneck queues during peak morning and evening hours. Commercial fleets lose thousands of productive hours and burn excess fuel merely queueing up.
+          </p>
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-white/5 text-[11px] text-rose-300">
+            <strong>Impact:</strong> ~45 minutes wasted per vehicle trip, compounding city traffic gridlock.
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 border-rose-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-hand-holding-dollar"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">2. Predatory Surge Pricing</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Existing breakdown assistance and roadside refuelling services exploit emergencies by charging 30% to 50% above market price plus steep convenience charges and hidden commissions.
+          </p>
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-white/5 text-[11px] text-rose-300">
+            <strong>Impact:</strong> Consumers lack trust in doorstep fuel services due to unpredictable pricing.
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 border-rose-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-fire-flame-curved"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">3. Severe Generator Safety Hazard</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Hospitals, data centers, residential complexes, and construction equipment use diesel generators that cannot be driven to pumps. Transporting fuel in unapproved plastic cans creates high fire hazards and violates PESO norms.
+          </p>
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-white/5 text-[11px] text-rose-300">
+            <strong>Impact:</strong> Direct PESO compliance violations, fuel spillage, and high combustion risks.
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The current model is outdated: people lose hours in pump traffic, roadside providers overcharge during emergencies, and handling fuel in loose jerrycans for backup generators creates serious safety hazards.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4: SOLUTION ARCHITECTURE ==================== -->
+    <section class="slide" id="slide-4">
+      <div class="mb-6">
+        <div class="cyber-badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-2">
+          <i class="fas fa-lightbulb"></i> The FuelTrack Solution
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">A Closed-Loop Smart Fuel Logistics Ecosystem</h2>
+        <p class="text-xs text-slate-400">Integrated hardware and software platform linking refineries, depots, mobile tankers, and customers</p>
+      </div>
+
+      <div class="cyber-card p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+          <div class="bg-slate-950/80 p-4 rounded-2xl border border-white/10">
+            <div class="text-2xl mb-2">🏬</div>
+            <strong class="text-white text-sm block">1. Depot Storage</strong>
+            <p class="text-slate-400 text-xs mt-1">Bulk tanks with ultrasonic level sensors and automated refill alerts.</p>
+          </div>
+          <div class="bg-slate-950/80 p-4 rounded-2xl border border-cyan-500/30">
+            <div class="text-2xl mb-2">🚚</div>
+            <strong class="text-cyan-400 text-sm block">2. Micro-Tankers</strong>
+            <p class="text-slate-400 text-xs mt-1">PESO-certified flame-proof mobile refuelling units with GPS telematics.</p>
+          </div>
+          <div class="bg-slate-950/80 p-4 rounded-2xl border border-orange-500/30">
+            <div class="text-2xl mb-2">📱</div>
+            <strong class="text-orange-400 text-sm block">3. Customer Hub</strong>
+            <p class="text-slate-400 text-xs mt-1">Vehicle presets, volume slider, live digital pump meter, and transparent bill.</p>
+          </div>
+          <div class="bg-slate-950/80 p-4 rounded-2xl border border-emerald-500/30">
+            <div class="text-2xl mb-2">🛡️</div>
+            <strong class="text-emerald-400 text-sm block">4. Operations Radar</strong>
+            <p class="text-slate-400 text-xs mt-1">360° fleet radar, driver dispatch, price tariff sync, and delivery tracking.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="cyber-card p-5">
+          <h4 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i class="fas fa-check-circle text-emerald-400"></i> Quality & Compliance Assurance
+          </h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every litre is dispensed via computerized IoT flow meters calibrated to $\pm0.01\%$ accuracy. Digital density certificates are attached directly to each customer tax invoice.
+          </p>
+        </div>
+        <div class="cyber-card p-5">
+          <h4 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+            <i class="fas fa-bolt text-orange-400"></i> Ultra-Fast Cloud Telematics
+          </h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            18ms average latency across customer app, tanker GPS routers, and central admin control room, enabling instantaneous dispatch confirmation.
+          </p>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200 mt-4">
+        <strong>🎙️ Speaker Talking Points:</strong> FuelTrack connects four key nodes: depot bulk storage, smart micro-tankers, the customer booking app, and the centralized dispatch command center.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 5: PRICING FORMULA & TRANSPARENCY ==================== -->
+    <section class="slide" id="slide-5">
+      <div class="mb-6">
+        <div class="cyber-badge bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-2">
+          <i class="fas fa-calculator"></i> Fair Pricing Guarantee
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">The Zero-Markup Pricing Model</h2>
+        <p class="text-xs text-slate-400">Mathematical price breakdown guaranteeing customers pay only the standard pump rate</p>
+      </div>
+
+      <div class="cyber-card p-6 mb-6 highlight">
+        <div class="text-center mb-6">
+          <span class="text-xs font-mono-tech text-slate-400 uppercase tracking-widest block mb-2">CORE PRICING EQUATION</span>
+          <div class="text-2xl md:text-3xl font-black text-emerald-400 font-mono-tech bg-slate-950 p-4 rounded-2xl border border-emerald-500/30 inline-block shadow-lg">
+            Total (₹) = (Litres × Official Govt Rate) + Flat ₹50 Delivery + ₹0 Extra
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div class="space-y-3 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
+            <h4 class="font-bold text-white text-sm border-b border-white/10 pb-2">📋 Sample Bill: 35 Litres Petrol (Mumbai)</h4>
+            <div class="flex justify-between text-slate-300">
+              <span>Official Petrol Rate:</span>
+              <strong class="text-white font-mono-tech">₹104.21 / L</strong>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>Base Fuel Subtotal (35 × ₹104.21):</span>
+              <strong class="text-white font-mono-tech">₹3,647.35</strong>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <span>PESO Safety Delivery & Handling Fee:</span>
+              <strong class="text-white font-mono-tech">₹50.00</strong>
+            </div>
+            <div class="flex justify-between text-emerald-400 font-bold bg-emerald-500/10 p-2 rounded-xl border border-emerald-500/20">
+              <span>Platform Surcharge / Surge Markup:</span>
+              <span>₹0.00 (Zero Markup)</span>
+            </div>
+            <div class="flex justify-between text-base font-black text-white pt-2 border-t border-white/10">
+              <span>Total Payable Amount:</span>
+              <span class="text-emerald-400 text-lg font-mono-tech">₹3,697.35</span>
+            </div>
+          </div>
+
+          <div class="space-y-3 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
+            <h4 class="font-bold text-white text-sm border-b border-white/10 pb-2">⚖️ Comparison: FuelTrack vs. Competitors</h4>
+            <table class="ppt-table">
+              <thead>
+                <tr>
+                  <th>Factor</th>
+                  <th>FuelTrack</th>
+                  <th>Third-Party Apps</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Fuel Rate</strong></td>
+                  <td class="text-emerald-400 font-bold">Exact Market Rate</td>
+                  <td class="text-rose-400 font-bold">+20% to +40% Surge</td>
+                </tr>
+                <tr>
+                  <td><strong>Delivery Fee</strong></td>
+                  <td class="text-emerald-400 font-bold">Flat ₹50</td>
+                  <td class="text-rose-400 font-bold">₹250 - ₹500 Variable</td>
+                </tr>
+                <tr>
+                  <td><strong>IoT Calibration</strong></td>
+                  <td class="text-emerald-400 font-bold">±0.01% Certified</td>
+                  <td class="text-slate-400">Manual Jerrycan</td>
+                </tr>
+                <tr>
+                  <td><strong>Invoice</strong></td>
+                  <td class="text-emerald-400 font-bold">PESO Density Sealed</td>
+                  <td class="text-slate-400">Generic Receipt</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> Our transparent pricing formula eliminates the trust deficit in doorstep delivery. Customers see the exact unit price, fuel subtotal, and flat ₹50 delivery fee with zero surge charges.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 6: CUSTOMER HUB EXPERIENCE ==================== -->
+    <section class="slide" id="slide-6">
+      <div class="mb-6">
+        <div class="cyber-badge bg-orange-500/15 text-orange-400 border border-orange-500/30 mb-2">
+          <i class="fas fa-user-circle"></i> Customer Experience
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Customer Portal & Doorstep Booking</h2>
+        <p class="text-xs text-slate-400">Interactive vehicle presets, continuous volume slider, glowing LED pump meter, and live order tracking</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-lg">
+            <i class="fas fa-car"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">1. Quick Vehicle Presets</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            One-touch vehicle presets automatically calibrate recommended litre capacities:
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1.5 pt-1">
+            <li>🚗 <strong>Car / SUV:</strong> ~35 Litres (Petrol/Diesel)</li>
+            <li>🏍️ <strong>Two-Wheeler:</strong> ~10 Litres</li>
+            <li>🚚 <strong>Commercial Fleet:</strong> ~80 Litres</li>
+            <li>⚡ <strong>Standby DG:</strong> ~50 Litres</li>
+            <li>🚜 <strong>Agri / Heavy:</strong> ~120 Litres</li>
+          </ul>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg">
+            <i class="fas fa-gas-pump"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">2. Digital LED Flow Dispenser</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Simulates a real-world digital fuel dispenser meter:
+          </p>
+          <div class="bg-slate-950 p-3 rounded-xl border border-cyan-500/30 text-xs font-mono-tech space-y-2">
+            <div>
+              <span class="text-[9px] text-slate-400 block uppercase">TOTAL AMOUNT PAYABLE</span>
+              <span class="text-lg font-black text-emerald-400">₹3,697.35</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block uppercase">DISPENSED VOLUME</span>
+              <span class="text-base font-black text-cyan-400">35.00 Litres</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fas fa-location-arrow"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">3. Live GPS Order Tracker</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Multi-stage real-time delivery pipeline:
+          </p>
+          <div class="space-y-2 text-[11px] text-slate-300 pt-1">
+            <div class="flex items-center gap-2 text-emerald-400"><i class="fas fa-check-circle"></i> 1. Order Verified & Billed</div>
+            <div class="flex items-center gap-2 text-emerald-400"><i class="fas fa-check-circle"></i> 2. Micro-Tanker Assigned</div>
+            <div class="flex items-center gap-2 text-cyan-400"><i class="fas fa-truck-moving"></i> 3. In-Transit (ETA 12 mins)</div>
+            <div class="flex items-center gap-2 text-slate-500"><i class="fas fa-circle"></i> 4. IoT Nozzle Dispense</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The Customer Portal simplifies fuel ordering: pick a vehicle preset or adjust the volume slider, review the live digital dispenser breakdown, pay securely, and monitor the tanker en route via GPS.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 7: GPS RADAR & TELEMATICS HUD ==================== -->
+    <section class="slide" id="slide-7">
+      <div class="mb-6">
+        <div class="cyber-badge bg-blue-500/15 text-cyan-400 border border-cyan-500/30 mb-2">
+          <i class="fas fa-satellite"></i> Telematics HUD
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Live GPS Fleet Radar & Operations Command</h2>
+        <p class="text-xs text-slate-400">Military-grade radar screen tracking active mobile tankers with instant telematics inspection</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-4">
+          <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+            <i class="fas fa-crosshairs"></i> 360° Rotating Radar Screen
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            The Admin Command Center features a live coordinate grid with continuous 360-degree radar beam rotation mapping all active micro-tankers:
+          </p>
+          <div class="grid grid-cols-2 gap-2.5 text-xs">
+            <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
+              <strong class="text-emerald-400 block">TK-101 (Mumbai Express)</strong>
+              <span class="text-slate-400 text-[11px]">Speed: 42 km/h • 4,000L Diesel</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-cyan-500/30">
+              <strong class="text-cyan-400 block">TK-102 (Pune Fleet)</strong>
+              <span class="text-slate-400 text-[11px]">Speed: 38 km/h • 3,500L Petrol</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-amber-500/30">
+              <strong class="text-amber-400 block">TK-103 (Highway Unit)</strong>
+              <span class="text-slate-400 text-[11px]">Status: Dispensing • 2,800L Diesel</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/30">
+              <strong class="text-purple-400 block">TK-104 (Depot Base)</strong>
+              <span class="text-slate-400 text-[11px]">Status: Returning to HQ</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 space-y-4">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fas fa-microchip text-orange-400"></i> Click-to-Inspect Telematics HUD
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Clicking any tanker blip on the radar updates the HUD card with real-time hardware telematics:
+          </p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-slate-950/80 p-2.5 rounded-lg border border-white/10">
+              <span class="text-slate-400 block text-[10px]">Driver Contact</span>
+              <strong class="text-white">Rajesh Verma</strong>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-lg border border-white/10">
+              <span class="text-slate-400 block text-[10px]">Tank Temperature</span>
+              <strong class="text-cyan-400">24.2°C (PESO Safe)</strong>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-lg border border-white/10">
+              <span class="text-slate-400 block text-[10px]">IoT Flow Nozzle</span>
+              <strong class="text-emerald-400">Calibrated (±0.01%)</strong>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-lg border border-white/10">
+              <span class="text-slate-400 block text-[10px]">Destination ETA</span>
+              <strong class="text-amber-400">2.8 km (12 Mins)</strong>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <span class="cyber-badge bg-blue-500/20 text-cyan-400 border border-cyan-500/30 text-[10px]">Radio Driver Ping</span>
+            <span class="cyber-badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px]">Instant Arrive Simulator</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The Admin Radar provides a centralized view of all mobile refuelling units across the city, allowing operators to monitor speeds, safety temperatures, and driver radio status in real time.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 8: 3D FLUID TANKS & BULK STORAGE ==================== -->
+    <section class="slide" id="slide-8">
+      <div class="mb-6">
+        <div class="cyber-badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-2">
+          <i class="fas fa-wave-square"></i> Bulk Storage Visualizer
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">3D Animated Fluid Wave Storage Visualizer</h2>
+        <p class="text-xs text-slate-400">Real-time ultrasonic sensor tank volume & interactive dual-phase fluid wave dynamics</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 border-amber-500/30 space-y-3">
+          <div class="flex justify-between items-center text-amber-400">
+            <span class="text-2xl"><i class="fas fa-gas-pump"></i></span>
+            <span class="text-xs font-mono-tech bg-slate-950 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">78% CAP</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Tank 01: Bulk Petrol (Regular)</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Capacity: 10,000 Litres. Simulated dual-phase amber liquid wave animation updating continuously.
+          </p>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-white/5 text-xs text-slate-300 flex justify-between items-center">
+            <span>Volume: <strong>7,800 L</strong></span>
+            <span class="text-amber-400 font-bold">Dispense 500L</span>
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 border-emerald-500/30 space-y-3">
+          <div class="flex justify-between items-center text-emerald-400">
+            <span class="text-2xl"><i class="fas fa-oil-can"></i></span>
+            <span class="text-xs font-mono-tech bg-slate-950 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-bold">64% CAP</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Tank 02: Bulk Diesel (High Speed)</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Capacity: 15,000 Litres. Ultrasonic level sensor with automated low-reserve dispatch warnings.
+          </p>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-white/5 text-xs text-slate-300 flex justify-between items-center">
+            <span>Volume: <strong>9,600 L</strong></span>
+            <span class="text-emerald-400 font-bold">Dispense 500L</span>
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 border-cyan-500/30 space-y-3">
+          <div class="flex justify-between items-center text-cyan-400">
+            <span class="text-2xl"><i class="fas fa-fire-flame-simple"></i></span>
+            <span class="text-xs font-mono-tech bg-slate-950 px-2.5 py-1 rounded-lg border border-cyan-500/30 font-bold">88% CAP</span>
+          </div>
+          <h3 class="text-base font-bold text-white">Tank 03: CNG Pressure Unit</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Capacity: 8,000 kg. High-pressure clean compressed natural gas storage unit with auto top-up simulation.
+          </p>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-white/5 text-xs text-slate-300 flex justify-between items-center">
+            <span>Volume: <strong>7,040 kg</strong></span>
+            <span class="text-cyan-400 font-bold">Auto Top-Up</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The 3D fluid tank visualizer provides live stock visibility for depot operations, allowing simulation of tank refills and stock depletion during high-demand hours.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 9: IOT PUMP SIMULATOR & AUDIO ENGINE ==================== -->
+    <section class="slide" id="slide-9">
+      <div class="mb-6">
+        <div class="cyber-badge bg-orange-500/15 text-orange-400 border border-orange-500/30 mb-2">
+          <i class="fas fa-faucet-drip"></i> IoT Hardware & Audio
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">IoT Pump Simulator & Web Audio Synthesizer</h2>
+        <p class="text-xs text-slate-400">Real-time nozzle flow simulation and native browser procedural sound synthesis</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-4">
+          <h3 class="text-lg font-bold text-orange-400 flex items-center gap-2">
+            <i class="fas fa-gas-pump"></i> IoT Digital Flow Dispenser Simulator
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Simulates a real PESO-certified mobile refuelling nozzle pumping at <strong>45 Litres/minute</strong>:
+          </p>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
+              <span class="text-[9px] text-emerald-400 font-bold uppercase block">Dispensed Amount</span>
+              <strong class="text-lg font-black text-emerald-400 font-mono-tech">₹3,647.35</strong>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30">
+              <span class="text-[9px] text-emerald-400 font-bold uppercase block">Volume Flow</span>
+              <strong class="text-lg font-black text-cyan-400 font-mono-tech">35.00 L</strong>
+            </div>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>✔ Live animated nozzle hose gradient flow</li>
+            <li>✔ Real-time deduction from bulk depot inventory</li>
+            <li>✔ Auto-broadcasts completed transaction to live event stream</li>
+          </ul>
+        </div>
+
+        <div class="cyber-card p-6 space-y-4">
+          <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+            <i class="fas fa-volume-high"></i> Synthesized Web Audio API Engine
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Eliminates all external MP3 downloads. Audio tones are generated procedurally by browser oscillators:
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+              <span class="text-slate-300"><i class="fas fa-satellite mr-2 text-cyan-400"></i> Radar Ping Tone</span>
+              <span class="font-mono-tech text-cyan-400 text-[11px]">800Hz Sine Wave</span>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+              <span class="text-slate-300"><i class="fas fa-faucet-drip mr-2 text-orange-400"></i> Dispenser Motor Hum</span>
+              <span class="font-mono-tech text-orange-400 text-[11px]">120Hz Saw-tooth Wave</span>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 flex items-center justify-between">
+              <span class="text-slate-300"><i class="fas fa-check-double mr-2 text-emerald-400"></i> Checkout Success Chime</span>
+              <span class="font-mono-tech text-emerald-400 text-[11px]">523Hz → 784Hz Chord</span>
+            </div>
+          </div>
+          <span class="cyber-badge bg-slate-950 text-slate-300 border border-white/10 text-[10px]">Includes Sound ON / MUTE Toggle</span>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The pump simulator and native Web Audio synthesizer create an interactive experience that accurately simulates physical IoT dispenser equipment.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 10: STATION FRANCHISE HUB ==================== -->
+    <section class="slide" id="slide-10">
+      <div class="mb-6">
+        <div class="cyber-badge bg-amber-500/15 text-amber-400 border border-amber-500/30 mb-2">
+          <i class="fas fa-store"></i> Franchise Operations
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Station Franchise Owner Operations</h2>
+        <p class="text-xs text-slate-400">Dedicated operational portal for partnered petrol pumps, supply hubs, and depot managers</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-lg">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">1. Real-Time Depot KPIs</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Monitor total daily dispatches, in-transit deliveries, and gross revenue with zero-delay settlement directly to the franchise account.
+          </p>
+          <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 text-[11px] text-emerald-400 font-mono-tech">
+            Today's Settlement: ₹68,450.00
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg">
+            <i class="fas fa-gauge-high"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">2. Storage Gauge Warnings</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Automated sensor threshold alerts warn station managers when tank volume falls below 25%, initiating one-click bulk top-up orders.
+          </p>
+          <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 text-[11px] text-cyan-400 font-mono-tech">
+            Auto-Threshold: 25% Reserve Trigger
+          </div>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fas fa-truck-fast"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">3. Dispatch Approval Queue</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Incoming customer fuel orders are routed to the closest depot based on geographic clustering for rapid tanker assignment and driver dispatch.
+          </p>
+          <div class="bg-slate-950/80 p-2.5 rounded-xl border border-white/5 text-[11px] text-orange-400 font-mono-tech">
+            Average Dispatch Time: < 4 Mins
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> Station franchise owners get a streamlined dashboard to monitor depot tank gauges, approve customer dispatches, and track hourly dispense trends.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 11: TECHNICAL STACK & ARCHITECTURE ==================== -->
+    <section class="slide" id="slide-11">
+      <div class="mb-6">
+        <div class="cyber-badge bg-purple-500/15 text-purple-400 border border-purple-500/30 mb-2">
+          <i class="fas fa-code"></i> Engineering Architecture
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Technology Stack & Implementation</h2>
+        <p class="text-xs text-slate-400">High-performance architecture built with modern web standards and zero bloat</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="cyber-card p-5 space-y-2">
+          <span class="text-xs font-mono-tech text-cyan-400 uppercase font-bold block">FRONTEND</span>
+          <h4 class="text-base font-bold text-white">HTML5 & ES6+</h4>
+          <p class="text-xs text-slate-400">Single Page Application (SPA) structure with zero heavy framework bloat for 60fps responsiveness.</p>
+        </div>
+
+        <div class="cyber-card p-5 space-y-2">
+          <span class="text-xs font-mono-tech text-orange-400 uppercase font-bold block">STYLING</span>
+          <h4 class="text-base font-bold text-white">Cyber-Glass CSS</h4>
+          <p class="text-xs text-slate-400">Custom CSS design tokens, backdrop filters, 3D wave keyframes, and radar sweep animations.</p>
+        </div>
+
+        <div class="cyber-card p-5 space-y-2">
+          <span class="text-xs font-mono-tech text-emerald-400 uppercase font-bold block">BACKEND</span>
+          <h4 class="text-base font-bold text-white">Node.js Server</h4>
+          <p class="text-xs text-slate-400">Lightweight HTTP server with path traversal protection, MIME type routing, and SPA fallback.</p>
+        </div>
+
+        <div class="cyber-card p-5 space-y-2">
+          <span class="text-xs font-mono-tech text-purple-400 uppercase font-bold block">PERSISTENCE</span>
+          <h4 class="text-base font-bold text-white">LocalStorage DB</h4>
+          <p class="text-xs text-slate-400">Resilient client state engine for multi-state fuel tariffs, stations, and live order history.</p>
+        </div>
+      </div>
+
+      <div class="cyber-card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-2 font-mono-tech">FILE & MODULE DIRECTORY</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+          <div><code>server.js</code>: HTTP Server & Security</div>
+          <div><code>index.html</code>: Main SPA Application</div>
+          <div><code>login.html</code>: Cyber Authentication</div>
+          <div><code>style.css</code>: Cyber-Glass Design System</div>
+          <div><code>script.js</code>: Web Audio & Logic Engine</div>
+          <div><code>package.json</code>: Project Metadata</div>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200 mt-4">
+        <strong>🎙️ Speaker Talking Points:</strong> The codebase is deliberately structured for maximum performance: Vanilla HTML5/CSS3/JavaScript ensuring smooth 60fps animations with a lightweight Node.js backend.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 12: SAFETY, PESO & COMPLIANCE ==================== -->
+    <section class="slide" id="slide-12">
+      <div class="mb-6">
+        <div class="cyber-badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-2">
+          <i class="fas fa-shield-check"></i> Security & Regulations
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Safety, PESO Compliance & Quality Standards</h2>
+        <p class="text-xs text-slate-400">Multi-tier regulatory adherence, explosion-proof mobile hardware, and data encryption</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 border-emerald-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">1. PESO Certification</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Complies with Petroleum and Explosives Safety Organization (PESO) statutory guidelines for mobile refuelling units, roll-over protection, and emergency shut-off valves.
+          </p>
+        </div>
+
+        <div class="cyber-card p-6 border-cyan-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-vial-circle-check"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">2. Digital Density Seal</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every customer invoice includes an automated digital density test certificate verified before dispensing to guarantee 100% pure, unadulterated fuel.
+          </p>
+        </div>
+
+        <div class="cyber-card p-6 border-purple-500/30 space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center text-2xl mb-2">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">3. 256-Bit Data Security</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            End-to-end encrypted telemetry, tokenized payment verification, and sanitized API endpoints safeguarding customer location coordinates.
+          </p>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> Safety and compliance are core to the platform. We strictly adhere to PESO mobile refuelling standards, provide digital density test proof with every order, and encrypt all customer data.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 13: MARKET IMPACT & TARGET SECTORS ==================== -->
+    <section class="slide" id="slide-13">
+      <div class="mb-6">
+        <div class="cyber-badge bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 mb-2">
+          <i class="fas fa-chart-pie"></i> Market Opportunity
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Target Market Segments & Scalability</h2>
+        <p class="text-xs text-slate-400">Total addressable market spanning retail B2C users, commercial B2B fleets, and mission-critical power</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="cyber-card p-5 text-center space-y-2">
+          <span class="text-4xl block">🚗</span>
+          <strong class="text-white text-sm block">1. Retail Consumers</strong>
+          <p class="text-slate-400 text-xs">Apartment complexes, office tech parks, and residential doorstep top-ups saving driver time.</p>
+        </div>
+
+        <div class="cyber-card p-5 text-center space-y-2">
+          <span class="text-4xl block">🚚</span>
+          <strong class="text-white text-sm block">2. Commercial Fleets</strong>
+          <p class="text-slate-400 text-xs">Scheduled overnight bulk refuelling for logistics vans, delivery trucks, and bus operators.</p>
+        </div>
+
+        <div class="cyber-card p-5 text-center space-y-2">
+          <span class="text-4xl block">⚡</span>
+          <strong class="text-white text-sm block">3. Standby Generators</strong>
+          <p class="text-slate-400 text-xs">Emergency diesel delivery for hospital ICUs, data centers, telecom towers, and high-rises.</p>
+        </div>
+
+        <div class="cyber-card p-5 text-center space-y-2">
+          <span class="text-4xl block">🚜</span>
+          <strong class="text-white text-sm block">4. Agri & Infrastructure</strong>
+          <p class="text-slate-400 text-xs">Direct field refuelling for farm tractors, highway earthmovers, and road construction machinery.</p>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> The market spans four distinct sectors: personal retail vehicles, scheduled commercial fleet refuelling, mission-critical backup generators, and on-site agricultural machinery.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 14: FUTURE ROADMAP ==================== -->
+    <section class="slide" id="slide-14">
+      <div class="mb-6">
+        <div class="cyber-badge bg-orange-500/15 text-orange-400 border border-orange-500/30 mb-2">
+          <i class="fas fa-rocket"></i> Future Growth
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Product Roadmap & Expansion Milestones</h2>
+        <p class="text-xs text-slate-400">Strategic evolution from doorstep fuel delivery into an integrated smart mobile energy platform</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="cyber-card p-6 space-y-3">
+          <span class="text-xs font-mono-tech text-orange-400 font-bold block">PHASE 1 (Q3 2026)</span>
+          <h3 class="text-base font-bold text-white">AI Tanker Dispatch Routing</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Machine learning clustering algorithms to group geographically close fuel orders, reducing tanker travel time and fleet emissions by 35%.
+          </p>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <span class="text-xs font-mono-tech text-cyan-400 font-bold block">PHASE 2 (Q4 2026)</span>
+          <h3 class="text-base font-bold text-white">Mobile EV Fast Charging</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Equip selected micro-tankers with high-density 150kW DC rapid battery banks to provide emergency roadside charging for stranded EVs.
+          </p>
+        </div>
+
+        <div class="cyber-card p-6 space-y-3">
+          <span class="text-xs font-mono-tech text-emerald-400 font-bold block">PHASE 3 (2027)</span>
+          <h3 class="text-base font-bold text-white">RFID Auto-Dispense Caps</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Smart vehicle fuel tank caps communicating with tanker nozzles via RFID for zero-touch automatic authentication and tamper-proof billing.
+          </p>
+        </div>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200">
+        <strong>🎙️ Speaker Talking Points:</strong> Our roadmap moves from smart routing in Phase 1 to mobile rapid EV rescue charging in Phase 2, and zero-touch RFID automated vehicle refuelling in Phase 3.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 15: LIVE DEMO & NAVIGATION ==================== -->
+    <section class="slide" id="slide-15">
+      <div class="mb-6">
+        <div class="cyber-badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-2">
+          <i class="fas fa-play"></i> Live Demonstration
+        </div>
+        <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Interactive Live System Demonstration</h2>
+        <p class="text-xs text-slate-400">Explore the live application endpoints running on localhost:8080</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <a href="index.html" class="cyber-card p-5 hover:border-orange-500 transition block text-center space-y-2">
+          <span class="text-3xl block">🏠</span>
+          <strong class="text-white text-sm block">Home Landing</strong>
+          <span class="text-xs text-slate-400">Hero banner & live price ticker</span>
+        </a>
+
+        <a href="index.html?role=user" class="cyber-card p-5 hover:border-orange-500 transition block text-center space-y-2">
+          <span class="text-3xl block">👤</span>
+          <strong class="text-orange-400 text-sm block">Customer Fuel Hub</strong>
+          <span class="text-xs text-slate-400">Order fuel & live GPS tracker</span>
+        </a>
+
+        <a href="index.html?role=admin" class="cyber-card p-5 hover:border-cyan-500 transition block text-center space-y-2">
+          <span class="text-3xl block">🛡️</span>
+          <strong class="text-cyan-400 text-sm block">Admin Operations</strong>
+          <span class="text-xs text-slate-400">Radar HUD & 3D fluid tanks</span>
+        </a>
+
+        <a href="index.html?role=owner" class="cyber-card p-5 hover:border-emerald-500 transition block text-center space-y-2">
+          <span class="text-3xl block">🏪</span>
+          <strong class="text-emerald-400 text-sm block">Station Owner Hub</strong>
+          <span class="text-xs text-slate-400">Depot gauges & dispatch log</span>
+        </a>
+      </div>
+
+      <div class="cyber-card p-5 text-xs text-slate-300">
+        <strong class="text-white block mb-1">💡 Quick Demonstration Steps:</strong>
+        <ol class="list-decimal list-inside space-y-1 text-slate-400">
+          <li>Open <strong>Customer Hub</strong> $\rightarrow$ Select 🚗 Car $\rightarrow$ Move slider to 45L $\rightarrow$ Observe transparent ₹3,697 bill.</li>
+          <li>Click <strong>Proceed to Pay</strong> $\rightarrow$ Confirm UPI payment $\rightarrow$ View live order tracker and tax invoice.</li>
+          <li>Switch to <strong>Admin Operations</strong> $\rightarrow$ Click tanker blips on the 360° radar $\rightarrow$ Trigger 3D tank dispense.</li>
+        </ol>
+      </div>
+
+      <div class="speaker-notes-box hidden bg-slate-900/95 border border-amber-500/30 p-4 rounded-2xl text-left text-xs text-amber-200 mt-4">
+        <strong>🎙️ Speaker Talking Points:</strong> We will now demonstrate the live system: placing a zero-markup fuel order as a customer, reviewing the live GPS tracker, and switching to the Admin radar command center.
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 16: CONCLUSION & Q&A ==================== -->
+    <section class="slide" id="slide-16">
+      <div class="max-w-3xl mx-auto text-center py-6">
+        <div class="cyber-badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 mb-6">
+          <i class="fas fa-check-double"></i> Summary & Questions
+        </div>
+        <h2 class="font-heading text-5xl md:text-6xl font-black text-white mb-4">
+          Fuel<span class="text-orange-500">Track</span>
+        </h2>
+        <p class="text-lg text-slate-300 mb-8 leading-relaxed">
+          The future of transparent, safe, and on-demand doorstep fuel logistics.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-2xl mx-auto mb-8 text-xs">
+          <div class="cyber-card p-4">
+            <strong class="text-white block mb-1">Key Takeaway #1</strong>
+            <span class="text-slate-400">100% price transparency: zero surge fees.</span>
+          </div>
+          <div class="cyber-card p-4">
+            <strong class="text-white block mb-1">Key Takeaway #2</strong>
+            <span class="text-slate-400">PESO certified micro-tankers & IoT flow meters.</span>
+          </div>
+          <div class="cyber-card p-4">
+            <strong class="text-white block mb-1">Key Takeaway #3</strong>
+            <span class="text-slate-400">Real-time GPS fleet radar & depot telematics.</span>
+          </div>
+        </div>
+
+        <div class="text-sm font-bold text-white mb-4">
+          Thank you! We are now open for Questions & Answers.
+        </div>
+
+        <div class="text-xs text-slate-400">
+          Press <kbd class="px-2 py-1 bg-slate-800 rounded border border-slate-700 text-white font-mono-tech">Left</kbd> or <kbd class="px-2 py-1 bg-slate-800 rounded border border-slate-700 text-white font-mono-tech">Right</kbd> arrow keys to navigate slides.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Quick Slide Jump Modal -->
+  <div id="slideJumpModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="cyber-card max-w-2xl w-full p-6 text-white border border-white/20">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
+        <h3 class="text-lg font-black font-heading">Jump to Slide</h3>
+        <button onclick="closeSlideJumpModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold">✕</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs max-h-96 overflow-y-auto pr-1" id="slideJumpList"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Progress Bar -->
+  <footer class="h-[5px] w-full bg-slate-900 z-50 fixed bottom-0 left-0 no-print">
+    <div id="progressBarFill" class="progress-bar-fill h-full bg-gradient-to-r from-orange-500 via-amber-400 to-cyan-400" style="width: 6.25%;"></div>
+  </footer>
+
+  <script>
+    const totalSlides = 16;
+    let currentSlide = 1;
+    let showNotes = false;
+
+    const slideTitles = [
+      "01. Title & Cover",
+      "02. Executive Summary",
+      "03. Problem Analysis",
+      "04. Solution Architecture",
+      "05. Zero-Markup Pricing",
+      "06. Customer Fuel Hub",
+      "07. GPS Fleet Radar & HUD",
+      "08. 3D Fluid Bulk Tanks",
+      "09. IoT Pump & Web Audio",
+      "10. Station Franchise Hub",
+      "11. Technology Stack",
+      "12. PESO Safety & Security",
+      "13. Market Segments",
+      "14. Future Roadmap",
+      "15. Live Demonstration",
+      "16. Conclusion & Q&A"
+    ];
+
+    function showSlide(index) {
+      if (index < 1) index = 1;
+      if (index > totalSlides) index = totalSlides;
+
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) {
+          slide.classList.remove('active');
+        }
+      }
+
+      const activeSlide = document.getElementById(`slide-${index}`);
+      if (activeSlide) {
+        activeSlide.classList.add('active');
+      }
+
+      currentSlide = index;
+
+      const paddedCurrent = String(currentSlide).padStart(2, '0');
+      const paddedTotal = String(totalSlides).padStart(2, '0');
+      document.getElementById('slideCounterText').textContent = `SLIDE ${paddedCurrent} / ${paddedTotal}`;
+      
+      const pct = (currentSlide / totalSlides) * 100;
+      document.getElementById('progressBarFill').style.width = `${pct}%`;
+
+      // Scroll slide viewport to top
+      document.querySelector('.slide-deck-viewport').scrollTop = 0;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleSpeakerNotes() {
+      showNotes = !showNotes;
+      const noteBoxes = document.querySelectorAll('.speaker-notes-box');
+      noteBoxes.forEach(box => {
+        if (showNotes) {
+          box.classList.remove('hidden');
+        } else {
+          box.classList.add('hidden');
+        }
+      });
+      const btn = document.getElementById('notesToggleBtn');
+      if (showNotes) {
+        btn.classList.add('bg-amber-500/20', 'text-amber-300', 'border-amber-500/40');
+      } else {
+        btn.classList.remove('bg-amber-500/20', 'text-amber-300', 'border-amber-500/40');
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
+
+    function openSlideJumpModal() {
+      const listContainer = document.getElementById('slideJumpList');
+      listContainer.innerHTML = '';
+      slideTitles.forEach((title, idx) => {
+        const slideNum = idx + 1;
+        const btn = document.createElement('button');
+        btn.className = `p-2.5 text-left rounded-xl border transition ${slideNum === currentSlide ? 'bg-orange-500/20 border-orange-500 text-orange-300 font-bold' : 'bg-slate-900 border-white/5 text-slate-300 hover:bg-slate-800'}`;
+        btn.textContent = title;
+        btn.onclick = () => {
+          showSlide(slideNum);
+          closeSlideJumpModal();
+        };
+        listContainer.appendChild(btn);
+      });
+      document.getElementById('slideJumpModal').classList.remove('hidden');
+    }
+
+    function closeSlideJumpModal() {
+      document.getElementById('slideJumpModal').classList.add('hidden');
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        showSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        showSlide(totalSlides);
+      } else if (e.key.toLowerCase() === 'n') {
+        toggleSpeakerNotes();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullScreen();
+      } else if (e.key === 'Escape') {
+        closeSlideJumpModal();
+      }
+    });
+
+    // Initialize
+    showSlide(1);
+  </script>
+</body>
+</html>
