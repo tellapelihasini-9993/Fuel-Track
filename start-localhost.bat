@@ -3,9 +3,8 @@ title FuelTrack Localhost Launcher
 cls
 echo ============================================================================
 echo   FuelTrack - Doorstep Fuel Delivery and Operations Center
-echo   Starting Embedded Multi-Page Localhost Web Engine...
+echo   Starting Localhost Web Engine...
 echo ============================================================================
-echo   Launching default browser to: http://localhost:5000/login.html
-start "" "http://localhost:5000/login.html"
-java -jar FuelTrackApp.jar
+echo   Opening web browser to: http://localhost:5000/login.html
+node server.js
 pause

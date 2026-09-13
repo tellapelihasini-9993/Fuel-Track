@@ -2443,14 +2443,14 @@ public class FuelTrackApp extends JFrame {
         seedDatabase();
         startEmbeddedHttpServer();
 
-        boolean webOnly = false;
+        boolean showGui = false;
         for (String arg : args) {
-            if ("--web-only".equalsIgnoreCase(arg) || "--headless".equalsIgnoreCase(arg) || "-w".equalsIgnoreCase(arg)) {
-                webOnly = true;
+            if ("--gui".equalsIgnoreCase(arg) || "-g".equalsIgnoreCase(arg)) {
+                showGui = true;
             }
         }
 
-        if (!webOnly && !GraphicsEnvironment.isHeadless()) {
+        if (showGui && !GraphicsEnvironment.isHeadless()) {
             SwingUtilities.invokeLater(() -> {
                 try {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -2459,7 +2459,6 @@ public class FuelTrackApp extends JFrame {
                 FuelTrackApp app = new FuelTrackApp();
                 app.refreshData();
                 app.setVisible(true);
-                System.out.println(">> Desktop Support Window Active (Use buttons to open pages in your browser).");
             });
         }
 
