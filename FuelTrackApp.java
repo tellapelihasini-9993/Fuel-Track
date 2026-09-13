@@ -405,6 +405,27 @@ public class FuelTrackApp extends JFrame {
 
         httpServer.start();
         System.out.println("🌐  FuelTrack Multi-Page Web Engine LIVE at: http://localhost:" + activePort);
+        System.out.println("👉  Login Portal:       http://localhost:" + activePort + "/login.html");
+        System.out.println("👉  Customer Portal:    http://localhost:" + activePort + "/user-dashboard.html?demo=true");
+        System.out.println("👉  Station Owner Hub:  http://localhost:" + activePort + "/owner-dashboard.html?demo=true");
+        System.out.println("👉  Main Landing Page:  http://localhost:" + activePort + "/index.html");
+
+        // Automatically open the browser to the login portal
+        try {
+            String targetUrl = "http://localhost:" + activePort + "/login.html";
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(targetUrl));
+            } else {
+                String os = System.getProperty("os.name", "").toLowerCase();
+                if (os.contains("win")) {
+                    new ProcessBuilder("cmd", "/c", "start", targetUrl).start();
+                } else if (os.contains("mac")) {
+                    new ProcessBuilder("open", targetUrl).start();
+                } else {
+                    new ProcessBuilder("xdg-open", targetUrl).start();
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private static void addCorsHeaders(HttpExchange ex) {
