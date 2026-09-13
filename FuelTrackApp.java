@@ -434,9 +434,21 @@ public class FuelTrackApp extends JFrame {
             boolean launched = false;
             if (os.contains("win")) {
                 try {
-                    new ProcessBuilder("cmd.exe", "/c", "start", "", url).start();
+                    new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", url).start();
                     launched = true;
                 } catch (Exception ignored) {}
+                if (!launched) {
+                    try {
+                        new ProcessBuilder("powershell.exe", "-NoProfile", "-Command", "Start-Process '" + url + "'").start();
+                        launched = true;
+                    } catch (Exception ignored) {}
+                }
+                if (!launched) {
+                    try {
+                        new ProcessBuilder("cmd.exe", "/c", "start", "", url).start();
+                        launched = true;
+                    } catch (Exception ignored) {}
+                }
             } else if (os.contains("mac")) {
                 try {
                     new ProcessBuilder("open", url).start();
@@ -567,7 +579,7 @@ public class FuelTrackApp extends JFrame {
     }
 
     private void initMultiPageGui() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1360, 880);
         setMinimumSize(new Dimension(1120, 740));
         setLocationRelativeTo(null);

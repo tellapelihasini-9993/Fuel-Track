@@ -4,8 +4,8 @@
   "description": "FuelTrack - Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Center",
   "main": "FuelTrackApp.java",
   "scripts": {
-    "dev": "java -jar FuelTrackApp.jar",
-    "start": "java -jar FuelTrackApp.jar",
+    "dev": "powershell -NoProfile -Command \"Start-Process 'http://localhost:5000/login.html'; java -jar FuelTrackApp.jar\"",
+    "start": "powershell -NoProfile -Command \"Start-Process 'http://localhost:5000/login.html'; java -jar FuelTrackApp.jar\"",
     "open": "powershell -NoProfile -Command Start-Process 'http://localhost:5000/login.html'",
     "serve": "java FuelTrackApp",
     "compile": "javac FuelTrackApp.java",
