@@ -1,10 +1,9 @@
 @echo off
-title FuelTrack Localhost Launcher
+title FuelTrack Pure Java Engine
 cls
 echo ============================================================================
 echo   FuelTrack - Doorstep Fuel Delivery and Operations Center
-echo   Starting Localhost Web Engine...
+echo   Starting 100%% Pure Java Engine...
 echo ============================================================================
-echo   Opening web browser to: http://localhost:5000/login.html
-node server.js
+java -jar FuelTrackApp.jar
 pause

@@ -323,16 +323,17 @@ public class FuelTrackApp extends JFrame {
     // 4. EMBEDDED PURE JAVA HTTP SERVER (Multi-Page Web Views)
     // ========================================================================
     private static void startEmbeddedHttpServer() {
-        try {
-            activePort = DEFAULT_PORT;
-            httpServer = HttpServer.create(new InetSocketAddress(activePort), 0);
-        } catch (IOException e) {
+        int[] candidatePorts = {DEFAULT_PORT, FALLBACK_PORT, 5001, 5002, 3000};
+        for (int p : candidatePorts) {
             try {
-                activePort = FALLBACK_PORT;
+                activePort = p;
                 httpServer = HttpServer.create(new InetSocketAddress(activePort), 0);
-            } catch (IOException e2) {
-                return;
-            }
+                break;
+            } catch (IOException ignored) {}
+        }
+        if (httpServer == null) {
+            System.err.println("Notice: Could not bind any default port.");
+            return;
         }
 
         httpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
@@ -352,23 +353,24 @@ public class FuelTrackApp extends JFrame {
                 return;
             }
             if (path.equals("/index.html") || path.equals("/project1.html") || path.equals("/landing")) {
-                serveDiskFile(exchange, new File("index.html"), "text/html; charset=utf-8");
+                serveDiskFile(exchange, resolveFile("index.html"), "text/html; charset=utf-8");
                 return;
             }
             if (path.equals("/user") || path.equals("/user-dashboard.html") || path.equals("/customer") || path.equals("/tracker")) {
-                serveDiskFile(exchange, new File("user-dashboard.html"), "text/html; charset=utf-8");
+                serveDiskFile(exchange, resolveFile("user-dashboard.html"), "text/html; charset=utf-8");
                 return;
             }
             if (path.equals("/owner") || path.equals("/owner-dashboard.html") || path.equals("/master")) {
-                serveDiskFile(exchange, new File("owner-dashboard.html"), "text/html; charset=utf-8");
+                serveDiskFile(exchange, resolveFile("owner-dashboard.html"), "text/html; charset=utf-8");
                 return;
             }
             if (path.equals("/login") || path.equals("/login.html")) {
-                serveDiskFile(exchange, new File("login.html"), "text/html; charset=utf-8");
+                serveDiskFile(exchange, resolveFile("login.html"), "text/html; charset=utf-8");
                 return;
             }
 
-            File f = new File("." + path);
+            File f = resolveFile("." + path);
+            if (!f.exists()) f = resolveFile(path.startsWith("/") ? path.substring(1) : path);
             if (f.exists() && !f.isDirectory()) {
                 String mime = "text/plain";
                 if (path.endsWith(".html")) mime = "text/html; charset=utf-8";
@@ -382,7 +384,7 @@ public class FuelTrackApp extends JFrame {
                 return;
             }
 
-            serveDiskFile(exchange, new File("login.html"), "text/html; charset=utf-8");
+            serveDiskFile(exchange, resolveFile("login.html"), "text/html; charset=utf-8");
         });
 
         // API Context
@@ -487,6 +489,16 @@ public class FuelTrackApp extends JFrame {
         }
         ex.sendResponseHeaders(code, b.length);
         try (OutputStream os = ex.getResponseBody()) { os.write(b); }
+    }
+
+    private static File resolveFile(String name) {
+        File direct = new File(name);
+        if (direct.exists()) return direct;
+        File inArchive = new File("web_archive", name);
+        if (inArchive.exists()) return inArchive;
+        File inLegacy = new File("legacy_web_backup", name);
+        if (inLegacy.exists()) return inLegacy;
+        return direct;
     }
 
     private static void serveDiskFile(HttpExchange ex, File f, String mime) throws IOException {

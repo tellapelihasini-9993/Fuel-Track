@@ -4,12 +4,12 @@
   "description": "FuelTrack - Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Center",
   "main": "server.js",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js",
-    "open": "powershell -NoProfile -Command Start-Process 'http://localhost:5000/login.html'",
+    "dev": "java -jar FuelTrackApp.jar",
+    "start": "java -jar FuelTrackApp.jar",
+    "gui": "java -jar FuelTrackApp.jar --gui",
     "java": "java -jar FuelTrackApp.jar",
     "compile": "javac FuelTrackApp.java",
-    "build": "javac FuelTrackApp.java && jar cfe FuelTrackApp.jar FuelTrackApp *.class"
+    "build": "javac FuelTrackApp.java && jar cfm FuelTrackApp.jar manifest.txt *.class"
   },
   "keywords": [
     "fuel",
