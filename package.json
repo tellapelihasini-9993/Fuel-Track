@@ -4,10 +4,10 @@
   "description": "FuelTrack - Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Center",
   "main": "server.js",
   "scripts": {
-    "dev": "java -jar FuelTrackApp.jar",
-    "start": "java -jar FuelTrackApp.jar",
-    "gui": "java -jar FuelTrackApp.jar --gui",
-    "java": "java -jar FuelTrackApp.jar",
+    "dev": "java FuelTrackApp",
+    "start": "java FuelTrackApp",
+    "gui": "java FuelTrackApp --gui",
+    "java": "java FuelTrackApp",
     "compile": "javac FuelTrackApp.java",
     "build": "javac FuelTrackApp.java && jar cfm FuelTrackApp.jar manifest.txt *.class"
   },

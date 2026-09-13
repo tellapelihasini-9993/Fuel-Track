@@ -1,5 +1,4 @@
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import javax.swing.*;
@@ -36,6 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * ============================================================================
  */
 public class FuelTrackApp extends JFrame {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String APP_NAME = "FuelTrack Multi-Page Command Engine";
     public static final String APP_VERSION = "2.2.0 (Pure Java SE)";
@@ -336,7 +337,7 @@ public class FuelTrackApp extends JFrame {
             return;
         }
 
-        httpServer.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+        httpServer.setExecutor(Executors.newCachedThreadPool());
 
         // Multi-page routing
         httpServer.createContext("/", exchange -> {
@@ -533,24 +534,33 @@ public class FuelTrackApp extends JFrame {
         int i = 0;
         for (Object o : items) {
             if (i > 0) sb.append(",");
-            if (o instanceof FuelRate r) {
+            if (o instanceof FuelRate) {
+                FuelRate r = (FuelRate) o;
                 sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"city\":\"%s\",\"fuelType\":\"%s\",\"ratePerLitre\":%.2f}", escapeJson(r.id), escapeJson(r.city), escapeJson(r.fuelType), r.ratePerLitre));
-            } else if (o instanceof Tanker t) {
+            } else if (o instanceof Tanker) {
+                Tanker t = (Tanker) o;
                 sb.append(String.format(Locale.US, "{\"code\":\"%s\",\"name\":\"%s\",\"fuelType\":\"%s\",\"currentLitres\":%.1f,\"capacityLitres\":%.1f,\"status\":\"%s\"}", escapeJson(t.code), escapeJson(t.name), escapeJson(t.fuelType), t.currentLitres, t.capacityLitres, escapeJson(t.status)));
-            } else if (o instanceof Order ord) {
+            } else if (o instanceof Order) {
+                Order ord = (Order) o;
                 sb.append(String.format(Locale.US, "{\"orderNumber\":\"%s\",\"fuelType\":\"%s\",\"litres\":%.1f,\"total\":%.2f,\"status\":\"%s\"}", escapeJson(ord.orderNumber), escapeJson(ord.fuelType), ord.quantityLitres, ord.totalAmount, escapeJson(ord.status)));
-            } else if (o instanceof Invoice inv) {
+            } else if (o instanceof Invoice) {
+                Invoice inv = (Invoice) o;
                 sb.append(String.format(Locale.US, "{\"invoiceNumber\":\"%s\",\"total\":%.2f}", escapeJson(inv.invoiceNumber), inv.totalAmount));
-            } else if (o instanceof Complaint c) {
+            } else if (o instanceof Complaint) {
+                Complaint c = (Complaint) o;
                 sb.append(String.format("{\"ticketNumber\":\"%s\",\"customerName\":\"%s\",\"category\":\"%s\",\"priority\":\"%s\",\"status\":\"%s\",\"desc\":\"%s\"}", escapeJson(c.ticketNumber), escapeJson(c.customerName), escapeJson(c.category), escapeJson(c.priority), escapeJson(c.status), escapeJson(c.description)));
-            } else if (o instanceof DeliveryFeedback fb) {
+            } else if (o instanceof DeliveryFeedback) {
+                DeliveryFeedback fb = (DeliveryFeedback) o;
                 sb.append(String.format("{\"orderNumber\":\"%s\",\"customerName\":\"%s\",\"rating\":%d,\"driver\":\"%s\",\"comment\":\"%s\"}", escapeJson(fb.orderNumber), escapeJson(fb.customerName), fb.rating, escapeJson(fb.driverName), escapeJson(fb.comment)));
-            } else if (o instanceof AuditLog a) {
+            } else if (o instanceof AuditLog) {
+                AuditLog a = (AuditLog) o;
                 sb.append(String.format("{\"action\":\"%s\",\"time\":\"%s\"}", escapeJson(a.action), escapeJson(a.createdAt)));
-            } else if (o instanceof FuelTank ft) {
+            } else if (o instanceof FuelTank) {
+                FuelTank ft = (FuelTank) o;
                 sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"depotId\":\"%s\",\"fuelType\":\"%s\",\"currentLitres\":%.1f,\"maxCapacityLitres\":%.1f,\"sensorStatus\":\"%s\",\"lastRefillAt\":\"%s\"}",
                         escapeJson(ft.id), escapeJson(ft.depotId), escapeJson(ft.fuelType), ft.currentQuantityLitres, ft.maxCapacityLitres, escapeJson(ft.sensorStatus), escapeJson(ft.lastRefillAt)));
-            } else if (o instanceof Depot d) {
+            } else if (o instanceof Depot) {
+                Depot d = (Depot) o;
                 sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"name\":\"%s\",\"code\":\"%s\",\"city\":\"%s\",\"address\":\"%s\",\"latitude\":%.4f,\"longitude\":%.4f}",
                         escapeJson(d.id), escapeJson(d.name), escapeJson(d.code), escapeJson(d.city), escapeJson(d.address), d.latitude, d.longitude));
             }
@@ -564,7 +574,7 @@ public class FuelTrackApp extends JFrame {
     // ========================================================================
     private CardLayout cardLayout;
     private JPanel mainContainer;
-    private User currentUser;
+    private transient User currentUser;
 
     // Customer Form Inputs
     private JComboBox<String> userFuelCombo;

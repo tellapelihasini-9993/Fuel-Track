@@ -4,4 +4,4 @@ Write-Host "  Starting 100% Pure Java Engine..." -ForegroundColor Cyan
 Write-Host "============================================================================" -ForegroundColor Cyan
 Write-Host "  Opening default browser to: http://localhost:5000/login.html" -ForegroundColor Green
 
-java -jar FuelTrackApp.jar
+java FuelTrackApp
