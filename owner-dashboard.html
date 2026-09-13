@@ -920,10 +920,11 @@
 
     // Search complaints
     function searchComplaints() {
-      const q = document.getElementById('complaintSearchInput').value.toLowerCase();
+      const input = document.getElementById('complaintSearchInput');
+      const q = input ? input.value.toLowerCase() : '';
       const rows = document.querySelectorAll('.complaint-row');
       rows.forEach(r => {
-        const text = r.innerText.toLowerCase();
+        const text = (r.innerText || '').toLowerCase();
         r.style.display = text.includes(q) ? '' : 'none';
       });
     }
@@ -948,17 +949,19 @@
 
     function dispatchRetest(tkt, cust) {
       alert(`🔬 Quality Inspection Dispatched!\nTicket #${tkt}\nPilot Rajesh Kumar has been dispatched with a portable hydrometer to re-verify fuel density for ${cust}.`);
-      const st = document.getElementById('status-' + tkt) || document.getElementById('status-8812');
+      const cleanTkt = String(tkt).replace(/[^0-9]/g, '');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-' + cleanTkt) || document.getElementById('status-8812');
       if (st) { st.innerText = 'DISPATCHED_TEST'; st.className = 'status-chip chip-blue'; }
     }
 
     function issueRefund(tkt, cust, amt, rowId) {
       alert(`💳 Instant UPI Refund Processed!\nTicket #${tkt}\nAmount: ₹${amt.toFixed(2)}\nCredited to ${cust}'s UPI Virtual Payment Address.`);
-      const st = document.getElementById('status-' + tkt) || document.getElementById('status-8824');
+      const cleanTkt = String(tkt).replace(/[^0-9]/g, '');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-' + cleanTkt) || document.getElementById('status-8824');
       if (st) { st.innerText = 'REFUNDED_RESOLVED'; st.style.background = 'rgba(16, 185, 129, 0.2)'; st.style.color = '#10b981'; }
       if (rowId) {
         const row = document.getElementById(rowId);
-        if (row) { row.setAttribute('data-status', 'RESOLVED'); }
+        if (row && typeof row.setAttribute === 'function') { row.setAttribute('data-status', 'RESOLVED'); }
       }
       pendingComplaints = Math.max(0, pendingComplaints - 1);
       const countEl = document.getElementById('ownerComplaintCount');

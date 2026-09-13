@@ -122,7 +122,11 @@ function openSystemBrowser(url) {
   }, 400);
 }
 
-// Start Server with Port Fallback
+// Candidate ports in order of priority
+const CANDIDATE_PORTS = [5000, 8080, 5001, 5002, 3000];
+let portIndex = 0;
+
+// Start Server with Robust Port Fallback
 function startServer(port) {
   const server = app.listen(port, () => {
     console.log('============================================================================');
@@ -140,13 +144,19 @@ function startServer(port) {
   });
 
   server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE' && port === DEFAULT_PORT) {
-      console.log(`Notice: Port ${DEFAULT_PORT} is in use. Falling back to port ${FALLBACK_PORT}...`);
-      startServer(FALLBACK_PORT);
+    if (err.code === 'EADDRINUSE') {
+      portIndex++;
+      if (portIndex < CANDIDATE_PORTS.length) {
+        const nextPort = CANDIDATE_PORTS[portIndex];
+        console.log(`Notice: Port ${port} is occupied by an active process. Trying port ${nextPort}...`);
+        startServer(nextPort);
+      } else {
+        console.error('Notice: All default ports in use. Please close duplicate terminal tabs running "npm run dev".');
+      }
     } else {
-      console.error('Server failed to start:', err.message);
+      console.error('Server error:', err.message);
     }
   });
 }
 
-startServer(DEFAULT_PORT);
+startServer(CANDIDATE_PORTS[0]);
