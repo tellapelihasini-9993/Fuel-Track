@@ -308,7 +308,7 @@
   </nav>
 
   <!-- VIP All-Access Demo Account Banner -->
-  <div class="top-strip" id="vipDemoBanner" style="display: block; margin-bottom: -6px;">
+  <div class="top-strip" id="vipDemoBanner" style="display: none; margin-bottom: -6px;">
     <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(245, 158, 11, 0.18)); border: 1px solid rgba(245, 158, 11, 0.5); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="background: var(--gold); color: black; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">⭐ VIP DEMO ACCOUNT ACTIVE</span>
@@ -914,7 +914,7 @@
     function placeOrder() {
       const total = (selectedLitres * currentRate + 50.00).toFixed(2);
       const ordNum = "FT-ORD-2026-" + Math.floor(1000 + Math.random() * 9000);
-      const row = `<tr><td>${ordNum}</td><td>${selectedFuel}</td><td>${selectedLitres.toFixed(1)} L</td><td>₹${total}</td><td><span class="status-chip chip-blue">DISPATCHED</span></td><td><button class="action-btn" style="padding: 4px 8px; font-size: 11px;" onclick="viewInvoice()"><i class="fa-solid fa-file-invoice"></i> PDF</button></td></tr>`;
+      const row = `<tr><td>${ordNum}</td><td>${selectedFuel}</td><td>${selectedLitres.toFixed(1)} L</td><td>₹${total}</td><td><span class="status-chip chip-blue">DISPATCHED</span></td><td><button class="action-btn" style="padding: 4px 8px; font-size: 11px;" onclick="viewInvoice('${ordNum}', '${selectedFuel}', ${selectedLitres}, ${currentRate}, ${total})"><i class="fa-solid fa-file-invoice"></i> PDF</button></td></tr>`;
       document.getElementById('ordersTbody').innerHTML = row + document.getElementById('ordersTbody').innerHTML;
       alert(`🎉 Doorstep Delivery Dispatched!\nOrder #${ordNum}\nFuel: ${selectedFuel} (${selectedLitres}L)\nTotal: ₹${total} (Zero Hidden Fee)\nTanker TK-101 en route!`);
     }
@@ -923,8 +923,18 @@
       alert("⚡ ATEX IoT Flowmeter Test Initiated:\n\n• Dispensing: 35.0 Litres Petrol\n• Flow Rate: 3.8 L/sec\n• Digital Totalizer Pulses: 3,500 pulses\n• Volume Accuracy: 99.98%\n\nDispensing completed without a single spill. Digital tax receipt generated!");
     }
 
-    function viewInvoice() {
-      alert("📄 CERTIFIED DIGITAL TAX INVOICE\n---------------------------------------\nInvoice #:  FT-INV-2026-0099\nCustomer:   Vikram Malhotra (VIP Demo Account)\nDelivery:   Penthouse 12B, Lodha Bellissimo, Mahalaxmi\nProduct:    PETROL (BS-VI Ultra-Clean)\nQuantity:   45.0 Litres @ ₹104.21 / L\nSubtotal:   ₹4,689.45\nDelivery:   ₹50.00 (Flat Doorstep Fee)\nPlatform:   ₹0.00 (ZERO Platform Fee)\nTOTAL PAID: ₹4,739.45 (PAID via UPI)\nTanker:     MH-01-TK-101 (Tata 2KL Mobile Bowser)\nPilot:      Rajesh Kumar (Govt Hazmat L3 Certified)\nPESO Seal:  PESO-CERT-MUM-2026-8831 (742.8 kg/m³ @ 15°C)\nDigital QR: FT-VERIFY-2026-9901-PAID");
+    function viewInvoice(invNumber, fuelType, litres, rate, total) {
+      const isDemo = localStorage.getItem('fueltrack_demo_user') === 'true' || new URLSearchParams(window.location.search).get('demo') === 'true';
+      const custName = isDemo ? "Vikram Malhotra (VIP Demo Account)" : "Ananya Deshmukh (Worli Sea Face)";
+      const custAddr = isDemo ? "Penthouse 12B, Lodha Bellissimo, Mahalaxmi" : "Flat 402, Sea Green Apts, Worli Sea Face, Mumbai";
+      const invNo = invNumber ? String(invNumber).replace('ORD', 'INV') : "FT-INV-2026-0099";
+      const fType = fuelType || "PETROL (BS-VI Ultra-Clean)";
+      const qty = litres ? Number(litres).toFixed(1) : "45.0";
+      const rPerL = rate ? Number(rate).toFixed(2) : (fuelType === 'DIESEL' ? "92.15" : fuelType === 'CNG' ? "86.50" : "104.21");
+      const totAmt = total ? Number(total).toFixed(2) : ((Number(qty) * Number(rPerL)) + 50).toFixed(2);
+      const subAmt = (Number(totAmt) - 50).toFixed(2);
+
+      alert(`📄 CERTIFIED DIGITAL TAX INVOICE\n---------------------------------------\nInvoice #:  ${invNo}\nCustomer:   ${custName}\nDelivery:   ${custAddr}\nProduct:    ${fType}\nQuantity:   ${qty} Litres @ ₹${rPerL} / L\nSubtotal:   ₹${subAmt}\nDelivery:   ₹50.00 (Flat Doorstep Fee)\nPlatform:   ₹0.00 (ZERO Platform Fee)\nTOTAL PAID: ₹${totAmt} (PAID via UPI)\nTanker:     MH-01-TK-101 (Tata 2KL Mobile Bowser)\nPilot:      Rajesh Kumar (Govt Hazmat L3 Certified)\nPESO Seal:  PESO-CERT-MUM-2026-8831 (742.8 kg/m³ @ 15°C)\nDigital QR: FT-VERIFY-2026-9901-PAID`);
     }
 
     // Complaints logic
@@ -991,17 +1001,26 @@
       alert("Subscription schedule activated!");
     }
 
-    function logout() { window.location.href = 'login.html'; }
+    function logout() {
+      localStorage.removeItem('fueltrack_demo_user');
+      window.location.href = 'login.html';
+    }
 
     // Demo Mode Auto-Detector
     function checkDemoMode() {
       const urlParams = new URLSearchParams(window.location.search);
       const isDemo = urlParams.get('demo') === 'true' || localStorage.getItem('fueltrack_demo_user') === 'true';
+      const banner = document.getElementById('vipDemoBanner');
+      const nameLbl = document.getElementById('userNameLabel');
+      const addrInput = document.getElementById('deliveryAddress');
       if (isDemo) {
-        const banner = document.getElementById('vipDemoBanner');
         if (banner) banner.style.display = 'block';
-        const nameLbl = document.getElementById('userNameLabel');
         if (nameLbl) nameLbl.innerText = "Vikram Malhotra (VIP Demo Account)";
+        if (addrInput) addrInput.value = "Penthouse 12B, Lodha Bellissimo, Mahalaxmi, Mumbai";
+      } else {
+        if (banner) banner.style.display = 'none';
+        if (nameLbl) nameLbl.innerText = "Ananya Deshmukh (Worli Sea Face)";
+        if (addrInput) addrInput.value = "Flat 402, Sea Green Apts, Worli Sea Face, Mumbai";
       }
     }
 
@@ -1020,14 +1039,27 @@
 
     // Live Telemetry Simulation Loop
     let etaSec = 580;
+    let tankerProgress = 0.52;
     setInterval(() => {
       const spd = 41.5 + (Math.random() * 2.2);
-      document.getElementById('speedVal').innerText = spd.toFixed(1) + " km/h";
+      const spdEl = document.getElementById('speedVal');
+      if (spdEl) spdEl.innerText = spd.toFixed(1) + " km/h";
       if (etaSec > 5) {
         etaSec--;
         const m = Math.floor(etaSec / 60);
         const s = etaSec % 60;
-        document.getElementById('etaVal').innerText = `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+        const etaEl = document.getElementById('etaVal');
+        if (etaEl) etaEl.innerText = `${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+
+        tankerProgress = Math.min(0.85, tankerProgress + 0.001);
+        const tm = document.getElementById('tankerMarker');
+        if (tm) {
+          const t = tankerProgress;
+          const x = (1-t)*(1-t)*22 + 2*(1-t)*t*50 + t*t*78;
+          const y = (1-t)*(1-t)*28 + 2*(1-t)*t*20 + t*t*68;
+          tm.style.left = x + '%';
+          tm.style.top = y + '%';
+        }
       }
     }, 1000);
   </script>

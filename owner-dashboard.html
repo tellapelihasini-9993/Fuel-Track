@@ -829,7 +829,7 @@
     // Detect Demo vs Original Owner Account
     window.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const isDemo = urlParams.get('demo') === 'true' || localStorage.getItem('fueltrack_demo_user') === 'owner';
+      const isDemo = urlParams.get('demo') === 'true' || localStorage.getItem('fueltrack_demo_owner') === 'true' || localStorage.getItem('fueltrack_demo_user') === 'owner';
       const badge = document.getElementById('ownerMasterBadge');
       const banner = document.getElementById('vipOwnerDemoBanner');
 
@@ -841,6 +841,7 @@
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="background: var(--gold); color: black; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">👑 MASTER OWNER DEMO LOADED</span>
                 <span style="font-size: 13px; font-weight: 700; color: #f8fafc;">Rajeshwar Singhania • Central Command HQ, Sion Petro Complex, Mumbai</span>
+                <button onclick="toggleOwnerDemoProfile()" class="action-btn" style="padding: 3px 10px; font-size: 11px; border-color: var(--gold); color: var(--gold); margin-left: 8px;">Switch Profile</button>
               </div>
               <div style="display: flex; gap: 12px; align-items: center; font-size: 11px; font-weight: 700;">
                 <span style="color: var(--primary-hover);"><i class="fa-solid fa-truck-fast mr-1"></i> 3 Bowsers En Route</span>
@@ -861,6 +862,7 @@
               <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="background: var(--primary); color: white; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">⛽ STATION OWNER COCKPIT</span>
                 <span style="font-size: 13px; font-weight: 700; color: #f8fafc;">Sanjay Mehta • HPCL Central Terminal #402, Sion Petro Zone, Mumbai</span>
+                <button onclick="toggleOwnerDemoProfile()" class="action-btn" style="padding: 3px 10px; font-size: 11px; border-color: var(--primary); color: var(--primary-hover); margin-left: 8px;">Switch to VIP Demo</button>
               </div>
               <div style="display: flex; gap: 12px; align-items: center; font-size: 11px; font-weight: 700;">
                 <span style="color: var(--primary-hover);"><i class="fa-solid fa-truck mr-1"></i> 3 Bowsers Monitored</span>
@@ -874,9 +876,25 @@
       }
     });
 
+    function toggleOwnerDemoProfile() {
+      const isDemo = localStorage.getItem('fueltrack_demo_owner') === 'true';
+      if (isDemo) {
+        localStorage.removeItem('fueltrack_demo_owner');
+        window.location.href = 'owner-dashboard.html';
+      } else {
+        localStorage.setItem('fueltrack_demo_owner', 'true');
+        window.location.href = 'owner-dashboard.html?demo=true';
+      }
+    }
+
     function showTab(id) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      } else {
+        const btn = document.querySelector(`.tab-btn[onclick*="${id}"]`);
+        if (btn) btn.classList.add('active');
+      }
       ['tabRadar', 'tabComplaints', 'tabFeedback', 'tabTanks', 'tabOrders', 'tabAnalytics', 'tabRates'].forEach(tab => {
         const el = document.getElementById(tab);
         if (el) el.style.display = (tab === id) ? 'block' : 'none';
@@ -930,17 +948,23 @@
 
     function dispatchRetest(tkt, cust) {
       alert(`🔬 Quality Inspection Dispatched!\nTicket #${tkt}\nPilot Rajesh Kumar has been dispatched with a portable hydrometer to re-verify fuel density for ${cust}.`);
-      const st = document.getElementById('status-8812');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-8812');
       if (st) { st.innerText = 'DISPATCHED_TEST'; st.className = 'status-chip chip-blue'; }
     }
 
     function issueRefund(tkt, cust, amt, rowId) {
       alert(`💳 Instant UPI Refund Processed!\nTicket #${tkt}\nAmount: ₹${amt.toFixed(2)}\nCredited to ${cust}'s UPI Virtual Payment Address.`);
-      const st = document.getElementById('status-8824');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-8824');
       if (st) { st.innerText = 'REFUNDED_RESOLVED'; st.style.background = 'rgba(16, 185, 129, 0.2)'; st.style.color = '#10b981'; }
+      if (rowId) {
+        const row = document.getElementById(rowId);
+        if (row) { row.setAttribute('data-status', 'RESOLVED'); }
+      }
       pendingComplaints = Math.max(0, pendingComplaints - 1);
-      document.getElementById('ownerComplaintCount').innerText = pendingComplaints;
-      document.getElementById('openGrievanceCount').innerText = pendingComplaints + ' Pending';
+      const countEl = document.getElementById('ownerComplaintCount');
+      if (countEl) countEl.innerText = pendingComplaints;
+      const badgeEl = document.getElementById('openGrievanceCount');
+      if (badgeEl) badgeEl.innerText = pendingComplaints + ' Pending';
     }
 
     function resolveComplaint(tkt, rowId) {
@@ -955,8 +979,10 @@
           chips.forEach(c => { c.innerText = 'RESOLVED'; c.style.background = 'rgba(16, 185, 129, 0.2)'; c.style.color = '#10b981'; });
         }
         pendingComplaints = Math.max(0, pendingComplaints - 1);
-        document.getElementById('ownerComplaintCount').innerText = pendingComplaints;
-        document.getElementById('openGrievanceCount').innerText = pendingComplaints + ' Pending';
+        const countEl = document.getElementById('ownerComplaintCount');
+        if (countEl) countEl.innerText = pendingComplaints;
+        const badgeEl = document.getElementById('openGrievanceCount');
+        if (badgeEl) badgeEl.innerText = pendingComplaints + ' Pending';
       }
     }
 
@@ -1012,7 +1038,10 @@
       closeOwnerSettings();
       alert('Master preferences updated!');
     }
-    function logout() { window.location.href = 'login.html'; }
+    function logout() {
+      localStorage.removeItem('fueltrack_demo_owner');
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 </html>

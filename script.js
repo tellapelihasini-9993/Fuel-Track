@@ -1487,8 +1487,10 @@ function openRefillModal(stationId) {
   const stations = getStore(STORAGE_KEYS.STATIONS);
   const st = stations.find(s => s.id === stationId) || stations[0];
   if (st) {
-    document.getElementById('refillStationId').value = st.id;
-    document.getElementById('refillStationName').innerText = st.name;
+    const refillIdEl = document.getElementById('refillStationId');
+    if (refillIdEl) refillIdEl.value = st.id;
+    const refillNameEl = document.getElementById('refillStationName');
+    if (refillNameEl) refillNameEl.innerText = st.name;
     openModal('refillTankModal');
   }
 }
@@ -2450,6 +2452,46 @@ function viewOrderDetailsModal(orderId) {
     `;
   }
   openModal('orderDetailsModal');
+}
+
+// Export Orders to CSV File
+function exportOrdersToCSV() {
+  const orders = getStore(STORAGE_KEYS.ORDERS);
+  if (!orders || orders.length === 0) {
+    showToast('No orders found to export.', 'warning');
+    return;
+  }
+
+  const headers = ['Order ID', 'Customer', 'Phone', 'Station', 'Fuel Type', 'Litres', 'Rate (INR)', 'Delivery Fee', 'Total Amount', 'Payment Method', 'Date', 'Status', 'Delivery Address'];
+  const csvRows = [headers.join(',')];
+
+  orders.forEach(o => {
+    const row = [
+      `"${o.id || ''}"`,
+      `"${(o.customer || '').replace(/"/g, '""')}"`,
+      `"${(o.phone || '').replace(/"/g, '""')}"`,
+      `"${(o.station || '').replace(/"/g, '""')}"`,
+      `"${(o.fuelType || '').replace(/"/g, '""')}"`,
+      o.litres !== undefined ? o.litres : '',
+      o.rate !== undefined ? o.rate : '',
+      o.deliveryFee !== undefined ? o.deliveryFee : '50.00',
+      o.amount !== undefined ? o.amount : '',
+      `"${(o.paymentMethod || '').replace(/"/g, '""')}"`,
+      `"${(o.date || '').replace(/"/g, '""')}"`,
+      `"${(o.status || '').replace(/"/g, '""')}"`,
+      `"${(o.deliveryAddress || '').replace(/"/g, '""')}"`
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
+  const link = document.createElement('a');
+  link.setAttribute('href', csvContent);
+  link.setAttribute('download', `FuelTrack_Orders_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('Orders exported successfully to CSV!', 'success');
 }
 
 // --- 12. SETTINGS & PROFILE MODALS ---

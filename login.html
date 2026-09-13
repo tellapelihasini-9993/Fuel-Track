@@ -772,9 +772,11 @@
     function launchDemo(role) {
       if (role === 'customer') {
         localStorage.setItem('fueltrack_demo_user', 'true');
+        localStorage.removeItem('fueltrack_demo_owner');
         window.location.href = 'user-dashboard.html?demo=true';
       } else {
         localStorage.setItem('fueltrack_demo_owner', 'true');
+        localStorage.removeItem('fueltrack_demo_user');
         window.location.href = 'owner-dashboard.html?demo=true';
       }
     }
@@ -783,10 +785,24 @@
       if (e) e.preventDefault();
       const email = document.getElementById('emailInput').value.trim();
 
-      if (activeRole === 'owner' || email.toLowerCase().includes('owner')) {
-        window.location.href = 'owner-dashboard.html';
+      if (email.toLowerCase().includes('demo')) {
+        if (activeRole === 'owner' || email.toLowerCase().includes('owner')) {
+          localStorage.setItem('fueltrack_demo_owner', 'true');
+          localStorage.removeItem('fueltrack_demo_user');
+          window.location.href = 'owner-dashboard.html?demo=true';
+        } else {
+          localStorage.setItem('fueltrack_demo_user', 'true');
+          localStorage.removeItem('fueltrack_demo_owner');
+          window.location.href = 'user-dashboard.html?demo=true';
+        }
       } else {
-        window.location.href = 'user-dashboard.html';
+        localStorage.removeItem('fueltrack_demo_user');
+        localStorage.removeItem('fueltrack_demo_owner');
+        if (activeRole === 'owner' || email.toLowerCase().includes('owner')) {
+          window.location.href = 'owner-dashboard.html';
+        } else {
+          window.location.href = 'user-dashboard.html';
+        }
       }
     }
 

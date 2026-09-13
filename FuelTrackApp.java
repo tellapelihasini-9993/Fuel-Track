@@ -340,6 +340,10 @@ public class FuelTrackApp extends JFrame {
         // Multi-page routing
         httpServer.createContext("/", exchange -> {
             addCorsHeaders(exchange);
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(204, -1);
+                return;
+            }
             String path = exchange.getRequestURI().getPath();
 
             if (path.equals("/") || path.equals("/index.html") || path.equals("/project1.html") || path.isEmpty()) {
@@ -384,13 +388,18 @@ public class FuelTrackApp extends JFrame {
                 return;
             }
             String path = exchange.getRequestURI().getPath();
-            if (path.equals("/api/fuel-rates")) sendJson(exchange, 200, toJsonList(FUEL_RATES.values()));
+            if (path.endsWith("/") && path.length() > 5) {
+                path = path.substring(0, path.length() - 1);
+            }
+            if (path.equals("/api/fuel-rates") || path.equals("/api/rates")) sendJson(exchange, 200, toJsonList(FUEL_RATES.values()));
             else if (path.equals("/api/tankers")) sendJson(exchange, 200, toJsonList(TANKERS.values()));
             else if (path.equals("/api/orders")) sendJson(exchange, 200, toJsonList(ORDERS.values()));
             else if (path.equals("/api/invoices")) sendJson(exchange, 200, toJsonList(INVOICES.values()));
             else if (path.equals("/api/complaints")) sendJson(exchange, 200, toJsonList(COMPLAINTS.values()));
             else if (path.equals("/api/feedback")) sendJson(exchange, 200, toJsonList(FEEDBACKS.values()));
             else if (path.equals("/api/audit-logs")) sendJson(exchange, 200, toJsonList(AUDIT_LOGS));
+            else if (path.equals("/api/fuel-tanks") || path.equals("/api/tanks")) sendJson(exchange, 200, toJsonList(FUEL_TANKS.values()));
+            else if (path.equals("/api/depots")) sendJson(exchange, 200, toJsonList(DEPOTS.values()));
             else sendJson(exchange, 200, "{\"status\":\"healthy\",\"server\":\"FuelTrack Pure Java Multi-Page Engine\"}");
         });
 
@@ -407,6 +416,11 @@ public class FuelTrackApp extends JFrame {
     private static void sendJson(HttpExchange ex, int code, String json) throws IOException {
         byte[] b = json.getBytes(StandardCharsets.UTF_8);
         ex.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+        if ("HEAD".equalsIgnoreCase(ex.getRequestMethod())) {
+            ex.getResponseHeaders().set("Content-Length", String.valueOf(b.length));
+            ex.sendResponseHeaders(code, -1);
+            return;
+        }
         ex.sendResponseHeaders(code, b.length);
         try (OutputStream os = ex.getResponseBody()) { os.write(b); }
     }
@@ -418,8 +432,24 @@ public class FuelTrackApp extends JFrame {
         }
         byte[] b = Files.readAllBytes(f.toPath());
         ex.getResponseHeaders().set("Content-Type", mime);
+        if ("HEAD".equalsIgnoreCase(ex.getRequestMethod())) {
+            ex.getResponseHeaders().set("Content-Length", String.valueOf(b.length));
+            ex.sendResponseHeaders(200, -1);
+            return;
+        }
         ex.sendResponseHeaders(200, b.length);
         try (OutputStream os = ex.getResponseBody()) { os.write(b); }
+    }
+
+    private static String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
     private static String toJsonList(Collection<?> items) {
@@ -428,19 +458,25 @@ public class FuelTrackApp extends JFrame {
         for (Object o : items) {
             if (i > 0) sb.append(",");
             if (o instanceof FuelRate r) {
-                sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"city\":\"%s\",\"fuelType\":\"%s\",\"ratePerLitre\":%.2f}", r.id, r.city, r.fuelType, r.ratePerLitre));
+                sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"city\":\"%s\",\"fuelType\":\"%s\",\"ratePerLitre\":%.2f}", escapeJson(r.id), escapeJson(r.city), escapeJson(r.fuelType), r.ratePerLitre));
             } else if (o instanceof Tanker t) {
-                sb.append(String.format(Locale.US, "{\"code\":\"%s\",\"name\":\"%s\",\"fuelType\":\"%s\",\"currentLitres\":%.1f,\"capacityLitres\":%.1f,\"status\":\"%s\"}", t.code, t.name, t.fuelType, t.currentLitres, t.capacityLitres, t.status));
+                sb.append(String.format(Locale.US, "{\"code\":\"%s\",\"name\":\"%s\",\"fuelType\":\"%s\",\"currentLitres\":%.1f,\"capacityLitres\":%.1f,\"status\":\"%s\"}", escapeJson(t.code), escapeJson(t.name), escapeJson(t.fuelType), t.currentLitres, t.capacityLitres, escapeJson(t.status)));
             } else if (o instanceof Order ord) {
-                sb.append(String.format(Locale.US, "{\"orderNumber\":\"%s\",\"fuelType\":\"%s\",\"litres\":%.1f,\"total\":%.2f,\"status\":\"%s\"}", ord.orderNumber, ord.fuelType, ord.quantityLitres, ord.totalAmount, ord.status));
+                sb.append(String.format(Locale.US, "{\"orderNumber\":\"%s\",\"fuelType\":\"%s\",\"litres\":%.1f,\"total\":%.2f,\"status\":\"%s\"}", escapeJson(ord.orderNumber), escapeJson(ord.fuelType), ord.quantityLitres, ord.totalAmount, escapeJson(ord.status)));
             } else if (o instanceof Invoice inv) {
-                sb.append(String.format(Locale.US, "{\"invoiceNumber\":\"%s\",\"total\":%.2f}", inv.invoiceNumber, inv.totalAmount));
+                sb.append(String.format(Locale.US, "{\"invoiceNumber\":\"%s\",\"total\":%.2f}", escapeJson(inv.invoiceNumber), inv.totalAmount));
             } else if (o instanceof Complaint c) {
-                sb.append(String.format("{\"ticketNumber\":\"%s\",\"customerName\":\"%s\",\"category\":\"%s\",\"priority\":\"%s\",\"status\":\"%s\",\"desc\":\"%s\"}", c.ticketNumber, c.customerName, c.category, c.priority, c.status, c.description));
+                sb.append(String.format("{\"ticketNumber\":\"%s\",\"customerName\":\"%s\",\"category\":\"%s\",\"priority\":\"%s\",\"status\":\"%s\",\"desc\":\"%s\"}", escapeJson(c.ticketNumber), escapeJson(c.customerName), escapeJson(c.category), escapeJson(c.priority), escapeJson(c.status), escapeJson(c.description)));
             } else if (o instanceof DeliveryFeedback fb) {
-                sb.append(String.format("{\"orderNumber\":\"%s\",\"customerName\":\"%s\",\"rating\":%d,\"driver\":\"%s\",\"comment\":\"%s\"}", fb.orderNumber, fb.customerName, fb.rating, fb.driverName, fb.comment));
+                sb.append(String.format("{\"orderNumber\":\"%s\",\"customerName\":\"%s\",\"rating\":%d,\"driver\":\"%s\",\"comment\":\"%s\"}", escapeJson(fb.orderNumber), escapeJson(fb.customerName), fb.rating, escapeJson(fb.driverName), escapeJson(fb.comment)));
             } else if (o instanceof AuditLog a) {
-                sb.append(String.format("{\"action\":\"%s\",\"time\":\"%s\"}", a.action, a.createdAt));
+                sb.append(String.format("{\"action\":\"%s\",\"time\":\"%s\"}", escapeJson(a.action), escapeJson(a.createdAt)));
+            } else if (o instanceof FuelTank ft) {
+                sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"depotId\":\"%s\",\"fuelType\":\"%s\",\"currentLitres\":%.1f,\"maxCapacityLitres\":%.1f,\"sensorStatus\":\"%s\",\"lastRefillAt\":\"%s\"}",
+                        escapeJson(ft.id), escapeJson(ft.depotId), escapeJson(ft.fuelType), ft.currentQuantityLitres, ft.maxCapacityLitres, escapeJson(ft.sensorStatus), escapeJson(ft.lastRefillAt)));
+            } else if (o instanceof Depot d) {
+                sb.append(String.format(Locale.US, "{\"id\":\"%s\",\"name\":\"%s\",\"code\":\"%s\",\"city\":\"%s\",\"address\":\"%s\",\"latitude\":%.4f,\"longitude\":%.4f}",
+                        escapeJson(d.id), escapeJson(d.name), escapeJson(d.code), escapeJson(d.city), escapeJson(d.address), d.latitude, d.longitude));
             }
             i++;
         }

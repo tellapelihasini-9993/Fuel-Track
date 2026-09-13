@@ -2,15 +2,13 @@
   "name": "fueltrack",
   "version": "1.0.0",
   "description": "FuelTrack - Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Center",
-  "main": "server/src/index.ts",
+  "main": "FuelTrackApp.java",
   "scripts": {
-    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"tsx watch server/src/index.ts\" \"cd client && npm run dev\"",
-    "dev:server": "tsx watch server/src/index.ts",
-    "dev:client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "tsx server/src/index.ts",
-    "test": "vitest run",
-    "serve": "node server.js"
+    "dev": "java -jar FuelTrackApp.jar",
+    "start": "java -jar FuelTrackApp.jar",
+    "serve": "java FuelTrackApp",
+    "compile": "javac FuelTrackApp.java",
+    "build": "javac FuelTrackApp.java && jar cfe FuelTrackApp.jar FuelTrackApp *.class"
   },
   "keywords": [
     "fuel",
