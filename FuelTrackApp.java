@@ -346,7 +346,12 @@ public class FuelTrackApp extends JFrame {
             }
             String path = exchange.getRequestURI().getPath();
 
-            if (path.equals("/") || path.equals("/index.html") || path.equals("/project1.html") || path.isEmpty()) {
+            if (path.equals("/") || path.isEmpty()) {
+                exchange.getResponseHeaders().set("Location", "/login.html");
+                exchange.sendResponseHeaders(302, -1);
+                return;
+            }
+            if (path.equals("/index.html") || path.equals("/project1.html") || path.equals("/landing")) {
                 serveDiskFile(exchange, new File("index.html"), "text/html; charset=utf-8");
                 return;
             }
@@ -377,7 +382,7 @@ public class FuelTrackApp extends JFrame {
                 return;
             }
 
-            serveDiskFile(exchange, new File("index.html"), "text/html; charset=utf-8");
+            serveDiskFile(exchange, new File("login.html"), "text/html; charset=utf-8");
         });
 
         // API Context
@@ -404,28 +409,54 @@ public class FuelTrackApp extends JFrame {
         });
 
         httpServer.start();
-        System.out.println("🌐  FuelTrack Multi-Page Web Engine LIVE at: http://localhost:" + activePort);
-        System.out.println("👉  Login Portal:       http://localhost:" + activePort + "/login.html");
-        System.out.println("👉  Customer Portal:    http://localhost:" + activePort + "/user-dashboard.html?demo=true");
-        System.out.println("👉  Station Owner Hub:  http://localhost:" + activePort + "/owner-dashboard.html?demo=true");
-        System.out.println("👉  Main Landing Page:  http://localhost:" + activePort + "/index.html");
+        System.out.println("============================================================================");
+        System.out.println("  FuelTrack Multi-Page Localhost Web Engine LIVE at: http://localhost:" + activePort);
+        System.out.println("============================================================================");
+        System.out.println("  [1] Login Portal:       http://localhost:" + activePort + "/login.html");
+        System.out.println("  [2] Customer Portal:    http://localhost:" + activePort + "/user-dashboard.html?demo=true");
+        System.out.println("  [3] Station Owner Hub:  http://localhost:" + activePort + "/owner-dashboard.html?demo=true");
+        System.out.println("  [4] Main Landing Page:  http://localhost:" + activePort + "/index.html");
+        System.out.println("============================================================================");
+        System.out.println("  >> Opening your default browser to http://localhost:" + activePort + "/login.html ...");
+        System.out.println("============================================================================");
 
         // Automatically open the browser to the login portal
-        try {
-            String targetUrl = "http://localhost:" + activePort + "/login.html";
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                Desktop.getDesktop().browse(new URI(targetUrl));
+        openBrowser("http://localhost:" + activePort + "/login.html");
+    }
+
+    public static void openBrowser(String url) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException ignored) {}
+
+            String os = System.getProperty("os.name", "").toLowerCase();
+            boolean launched = false;
+            if (os.contains("win")) {
+                try {
+                    new ProcessBuilder("cmd.exe", "/c", "start", "", url).start();
+                    launched = true;
+                } catch (Exception ignored) {}
+            } else if (os.contains("mac")) {
+                try {
+                    new ProcessBuilder("open", url).start();
+                    launched = true;
+                } catch (Exception ignored) {}
             } else {
-                String os = System.getProperty("os.name", "").toLowerCase();
-                if (os.contains("win")) {
-                    new ProcessBuilder("cmd", "/c", "start", targetUrl).start();
-                } else if (os.contains("mac")) {
-                    new ProcessBuilder("open", targetUrl).start();
-                } else {
-                    new ProcessBuilder("xdg-open", targetUrl).start();
-                }
+                try {
+                    new ProcessBuilder("xdg-open", url).start();
+                    launched = true;
+                } catch (Exception ignored) {}
             }
-        } catch (Exception ignored) {}
+
+            if (!launched) {
+                try {
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        Desktop.getDesktop().browse(new URI(url));
+                    }
+                } catch (Exception ignored) {}
+            }
+        }).start();
     }
 
     private static void addCorsHeaders(HttpExchange ex) {
@@ -551,13 +582,67 @@ public class FuelTrackApp extends JFrame {
         mainContainer.add(createCustomerPortalPage(), PAGE_CUSTOMER);
         mainContainer.add(createOwnerMasterPage(), PAGE_OWNER);
 
-        add(mainContainer);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(createWebLauncherBar(), BorderLayout.NORTH);
+        getContentPane().add(mainContainer, BorderLayout.CENTER);
 
         // Start at the Dedicated Login Page
         cardLayout.show(mainContainer, PAGE_LOGIN);
 
         // Start telematics engine
         startTelematicsEngine(this::refreshData);
+    }
+
+    private JPanel createWebLauncherBar() {
+        JPanel bar = new JPanel(new BorderLayout(12, 0));
+        bar.setBackground(new Color(15, 23, 42));
+        bar.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(30, 41, 59), 1),
+                new EmptyBorder(8, 16, 8, 16)
+        ));
+
+        JLabel title = new JLabel("<html><span style='color:#38bdf8; font-weight:bold;'>🌐 EMBEDDED LOCALHOST WEB SERVER:</span> <span style='color:#f8fafc; font-weight:bold;'>http://localhost:" + activePort + "/login.html</span></html>");
+        title.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        btnPanel.setOpaque(false);
+
+        JButton openWebBtn = new JButton("🚀 Open Web Login in Browser");
+        openWebBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        openWebBtn.setBackground(COLOR_PRIMARY);
+        openWebBtn.setForeground(Color.WHITE);
+        openWebBtn.setFocusPainted(false);
+        openWebBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/login.html"));
+
+        JButton openCustBtn = new JButton("👤 Customer Web Portal");
+        openCustBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        openCustBtn.setBackground(COLOR_SURFACE_ALT);
+        openCustBtn.setForeground(COLOR_TEXT_PRIMARY);
+        openCustBtn.setFocusPainted(false);
+        openCustBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/user-dashboard.html?demo=true"));
+
+        JButton openOwnerBtn = new JButton("👑 Owner Master Cockpit");
+        openOwnerBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        openOwnerBtn.setBackground(COLOR_SURFACE_ALT);
+        openOwnerBtn.setForeground(COLOR_GOLD);
+        openOwnerBtn.setFocusPainted(false);
+        openOwnerBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/owner-dashboard.html?demo=true"));
+
+        JButton openLandingBtn = new JButton("🏠 Landing Page");
+        openLandingBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        openLandingBtn.setBackground(COLOR_SURFACE_ALT);
+        openLandingBtn.setForeground(COLOR_TEXT_SECONDARY);
+        openLandingBtn.setFocusPainted(false);
+        openLandingBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/index.html"));
+
+        btnPanel.add(openWebBtn);
+        btnPanel.add(openCustBtn);
+        btnPanel.add(openOwnerBtn);
+        btnPanel.add(openLandingBtn);
+
+        bar.add(title, BorderLayout.WEST);
+        bar.add(btnPanel, BorderLayout.EAST);
+        return bar;
     }
 
     // ------------------------------------------------------------------------
@@ -2338,24 +2423,22 @@ public class FuelTrackApp extends JFrame {
     // 6. MAIN ENTRY POINT
     // ========================================================================
     public static void main(String[] args) {
-        System.out.println("""
-            ============================================================================
-              ███████╗██╗   ██╗███████╗██╗  ████████╗██████╗  █████╗  ██████╗██╗  ██╗
-              ██╔════╝██║   ██║██╔════╝██║  ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝
-              █████╗  ██║   ██║█████╗  ██║     ██║   ██████╔╝███████║██║     █████═╝ 
-              ██╔══╝  ██║   ██║██╔══╝  ██║     ██║   ██╔══██╗██╔══██║██║     ██╔═██╗ 
-              ██║     ╚██████╔╝███████╗███████╗██║   ██║  ██║██║  ██║╚██████╗██║ ╚██╗
-              ╚═╝      ╚═════╝ ╚══════╝╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
-            ============================================================================
-             🚀 MULTI-PAGE ARCHITECTURE • USER & MASTER OWNER HUBS SEPARATED
-             👑 FULL ACCESS TO STATION OWNER • UNIVERSAL SETTINGS AT ANY TIME
-            ============================================================================
-            """);
+        System.out.println("============================================================================");
+        System.out.println("  FuelTrack - Zero-Hidden-Fee Doorstep Fuel Delivery & Operations Center");
+        System.out.println("  100% Pure Java Multi-Page Web Engine & Localhost Server");
+        System.out.println("============================================================================");
 
         seedDatabase();
         startEmbeddedHttpServer();
 
-        if (!GraphicsEnvironment.isHeadless()) {
+        boolean webOnly = false;
+        for (String arg : args) {
+            if ("--web-only".equalsIgnoreCase(arg) || "--headless".equalsIgnoreCase(arg) || "-w".equalsIgnoreCase(arg)) {
+                webOnly = true;
+            }
+        }
+
+        if (!webOnly && !GraphicsEnvironment.isHeadless()) {
             SwingUtilities.invokeLater(() -> {
                 try {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -2364,9 +2447,7 @@ public class FuelTrackApp extends JFrame {
                 FuelTrackApp app = new FuelTrackApp();
                 app.refreshData();
                 app.setVisible(true);
-                app.toFront();
-                app.requestFocus();
-                System.out.println("🖥️  FuelTrack Multi-Page Desktop GUI Active!");
+                System.out.println(">> Desktop Support Window Active (Use buttons to open pages in your browser).");
             });
         }
 
