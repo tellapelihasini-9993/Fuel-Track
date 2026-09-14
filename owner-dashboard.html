@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FuelTrack — Station Owner Master Operations Cockpit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-deep: #05080e;
+      --bg-card: rgba(13, 19, 32, 0.9);
+      --bg-card-alt: rgba(18, 26, 44, 0.78);
+      --bg-input: rgba(9, 14, 23, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(245, 158, 11, 0.45);
+      --primary: #0ea5e9;
+      --primary-hover: #38bdf8;
+      --accent: #f97316;
+      --gold: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.12) 0px, transparent 45%),
+        radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 45%),
+        radial-gradient(at 50% 100%, rgba(239, 68, 68, 0.06) 0px, transparent 60%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+
+    /* Master Navbar */
+    .navbar {
+      background: rgba(9, 14, 24, 0.94);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(234, 88, 12, 0.35));
+      border: 1px solid var(--border-glow);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+
+    .brand-text h2 { font-size: 18px; font-weight: 800; }
+    .brand-text p { font-size: 11px; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .master-badge {
+      background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--gold); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-subtle);
+      color: var(--text-main); padding: 8px 14px; border-radius: 10px; font-size: 13px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .action-btn:hover { background: rgba(255, 255, 255, 0.12); border-color: var(--gold); }
+    .logout-btn { color: #f87171; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+
+    /* Top Master Strip */
+    .top-strip { max-width: 1380px; margin: 18px auto 0; padding: 0 24px; }
+    .master-alert-banner {
+      background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .alert-left { font-size: 13px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+    .status-badge { font-size: 11px; font-weight: 800; color: var(--success); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; }
+
+    /* Container */
+    .container { max-width: 1380px; margin: 20px auto 0; padding: 0 24px; }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 22px;
+    }
+    @media (max-width: 1120px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .kpi-card {
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 18px; position: relative; overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+    .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .kpi-card.gold::after { background: var(--gold); }
+    .kpi-card.blue::after { background: var(--primary); }
+    .kpi-card.green::after { background: var(--success); }
+    .kpi-card.orange::after { background: var(--accent); }
+
+    .kpi-lbl { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .kpi-val { font-size: 22px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+    /* Cockpit Navigation Tabs */
+    .cockpit-tabs {
+      display: flex; gap: 10px; margin-bottom: 22px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent; border: none; color: var(--text-muted); font-size: 13px; font-weight: 700;
+      padding: 10px 18px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: rgba(245, 158, 11, 0.16); color: var(--gold); border: 1px solid rgba(245, 158, 11, 0.35);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border-subtle);
+      border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+    .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .card-title i { color: var(--gold); }
+
+    /* Master Radar Canvas Layout */
+    .radar-split {
+      display: grid; grid-template-columns: 1fr 420px; gap: 20px;
+    }
+    @media (max-width: 1080px) { .radar-split { grid-template-columns: 1fr; } }
+
+    .master-radar-screen {
+      position: relative; width: 100%; height: 380px;
+      background: radial-gradient(circle at center, #0f192b 0%, #05070c 100%);
+      border: 1px solid var(--border-glow); border-radius: 18px; overflow: hidden;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.85);
+    }
+
+    .radar-grid-mesh {
+      position: absolute; width: 100%; height: 100%;
+      background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .owner-ring {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      border-radius: 50%; border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .or-1 { width: 100px; height: 100px; }
+    .or-2 { width: 200px; height: 200px; }
+    .or-3 { width: 300px; height: 300px; }
+
+    .owner-sweep {
+      position: absolute; top: 50%; left: 50%; width: 320px; height: 320px;
+      transform: translate(-50%, -50%); border-radius: 50%;
+    }
+    .owner-sweep::after {
+      content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 75%, rgba(245, 158, 11, 0.35) 100%);
+      animation: ownerRadarSpin 4s linear infinite;
+    }
+    @keyframes ownerRadarSpin { 100% { transform: rotate(360deg); } }
+
+    /* Landmark Hubs */
+    .depot-center-hub {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(245, 158, 11, 0.35); border: 2px solid var(--gold);
+      padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; color: white;
+      box-shadow: 0 0 20px var(--gold); z-index: 5;
+    }
+
+    .moving-tanker {
+      position: absolute; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; z-index: 4;
+    }
+    .t1 {
+      top: 30%; left: 24%; background: rgba(14, 165, 233, 0.35); border: 1px solid var(--primary);
+      box-shadow: 0 0 15px var(--primary); animation: tFloat1 4s ease-in-out infinite alternate;
+    }
+    .t2 {
+      top: 25%; left: 72%; background: rgba(16, 185, 129, 0.35); border: 1px solid var(--success);
+      box-shadow: 0 0 15px var(--success); animation: tFloat2 5s ease-in-out infinite alternate;
+    }
+    .t3 {
+      top: 68%; left: 62%; background: rgba(249, 115, 22, 0.35); border: 1px solid var(--accent);
+      box-shadow: 0 0 15px var(--accent);
+    }
+    @keyframes tFloat1 { 0% { transform: translate(0, 0); } 100% { transform: translate(12px, 8px); } }
+    @keyframes tFloat2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-14px, 10px); } }
+
+    /* Emergency Alert Banner Overlay */
+    .estop-banner {
+      position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%);
+      background: rgba(239, 68, 68, 0.92); backdrop-filter: blur(10px);
+      padding: 20px; text-align: center; color: white; font-weight: 800; font-size: 18px;
+      z-index: 10; display: none; border-top: 2px solid white; border-bottom: 2px solid white;
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
+    }
+
+    /* Radar Action Buttons */
+    .radar-actions {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .master-btn {
+      width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 13px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+    }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #ea580c); color: white; box-shadow: 0 8px 20px -5px rgba(245, 158, 11, 0.4); }
+    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-estop { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; box-shadow: 0 8px 20px -5px rgba(239, 68, 68, 0.5); }
+    .btn-estop:hover { filter: brightness(1.15); }
+
+    /* Bulk Tanks Grid */
+    .tanks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .tanks-grid { grid-template-columns: 1fr 1fr; } }
+    .tank-box { background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 18px; }
+    .tank-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .tank-name { font-size: 14px; font-weight: 700; }
+    .tank-badge { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .tank-bar-wrap { background: rgba(0, 0, 0, 0.4); height: 14px; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .tank-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); transition: width 0.5s; }
+    .tank-bar-fill.diesel { background: linear-gradient(90deg, #f97316, #fbbf24); }
+    .tank-stat-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border-subtle); }
+    td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-weight: 500; }
+    .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 20px;
+      width: 90%; max-width: 520px; padding: 28px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 11px 14px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 10px; color: var(--text-main); font-size: 13px; outline: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Master Navbar (Owner Cockpit Only) -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">👑</div>
+      <div class="brand-text">
+        <h2>FuelTrack Master Hub</h2>
+        <p>Station Owner Command Center</p>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="master-badge" id="ownerMasterBadge"><i class="fa-solid fa-crown"></i> Rajeshwar Singhania (Master Owner Demo)</div>
+      <button class="action-btn" onclick="openOwnerSettings()"><i class="fa-solid fa-gear"></i> Settings</button>
+      <button class="action-btn logout-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Exit Cockpit</button>
+    </div>
+  </nav>
+
+  <!-- VIP Master Owner Demo Banner -->
+  <div class="top-strip" id="vipOwnerDemoBanner" style="display: block; margin-bottom: -6px;">
+    <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.15)); border: 1px solid rgba(245, 158, 11, 0.55); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 25px rgba(245, 158, 11, 0.18);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="background: var(--gold); color: black; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">👑 MASTER OWNER DEMO LOADED</span>
+        <span style="font-size: 13px; font-weight: 700; color: #f8fafc;">Rajeshwar Singhania • Central Command HQ, Sion Petro Complex, Mumbai</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; font-size: 11px; font-weight: 700;">
+        <span style="color: var(--primary-hover);"><i class="fa-solid fa-truck-fast mr-1"></i> 3 Bowsers En Route</span>
+        <span style="color: var(--text-muted);">|</span>
+        <span style="color: var(--success);"><i class="fa-solid fa-gas-pump mr-1"></i> 4 Bulk Reserves (37,450L)</span>
+        <span style="color: var(--text-muted);">|</span>
+        <span style="color: #f87171;"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 3 Customer Tickets</span>
+        <span style="color: var(--text-muted);">|</span>
+        <span style="color: var(--gold);"><i class="fa-solid fa-star mr-1"></i> 4.95/5.0 CSAT Score</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Master Alert Strip -->
+  <div class="top-strip">
+    <div class="master-alert-banner">
+      <div class="alert-left">
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span>SATELLITE DISPATCH ACTIVE: 3 Mobile Dispenser Bowsers Active Across Greater Mumbai | Central Terminal #402</span>
+      </div>
+      <div class="status-badge">
+        ● 100% PESO COMPLIANT & ATEX ZONE-0 SEALED
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Standalone Owner Container -->
+  <div class="container">
+    <!-- Master KPI Metrics -->
+    <div class="kpi-grid">
+      <div class="kpi-card gold">
+        <div class="kpi-lbl">Total Station Revenue</div>
+        <div class="kpi-val" style="color: var(--gold);">₹1,84,650</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-lbl">Total Volume Dispensed</div>
+        <div class="kpi-val" style="color: var(--primary-hover);">18,450 L</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-lbl">Depot Bulk in Stock</div>
+        <div class="kpi-val" style="color: var(--success);" id="totalStock">38,850 L</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-lbl">Mobile Fleet Status</div>
+        <div class="kpi-val" style="color: var(--accent);">3 Bowsers En Route</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-lbl">PESO Density Rating</div>
+        <div class="kpi-val" style="color: var(--success); font-size: 16px;">100% BS-VI Pure</div>
+      </div>
+    </div>
+
+    <!-- Cockpit Navigation Tabs - TAB 1 IS FLEET GPS RADAR DEFAULT! -->
+    <div class="cockpit-tabs">
+      <button class="tab-btn active" onclick="showTab('tabRadar')"><i class="fa-solid fa-location-crosshairs"></i> 🛰️ Fleet GPS Radar Command</button>
+      <button class="tab-btn" onclick="showTab('tabComplaints')"><i class="fa-solid fa-bullhorn text-red-400"></i> 📬 Customer Grievance Desk (<span id="ownerComplaintCount">2</span>)</button>
+      <button class="tab-btn" onclick="showTab('tabFeedback')"><i class="fa-solid fa-star text-amber-400"></i> ⭐ Reviews & CSAT Wall</button>
+      <button class="tab-btn" onclick="showTab('tabTanks')"><i class="fa-solid fa-database"></i> 🏭 Depot Bulk Storage</button>
+      <button class="tab-btn" onclick="showTab('tabOrders')"><i class="fa-solid fa-clipboard-list"></i> 📋 Orders Stream & Override</button>
+      <button class="tab-btn" onclick="showTab('tabAnalytics')"><i class="fa-solid fa-chart-line"></i> 🏆 Driver Safety & Revenue</button>
+      <button class="tab-btn" onclick="showTab('tabRates')"><i class="fa-solid fa-tags"></i> 🏷️ Official Rates Management</button>
+    </div>
+
+    <!-- TAB 1: FLEET GPS RADAR COMMAND (DEFAULT ACTIVE) -->
+    <div id="tabRadar" class="card">
+      <div class="card-header-row">
+        <div class="card-title"><i class="fa-solid fa-location-crosshairs"></i> Master Fleet GPS Radar & Operations Control</div>
+        <span style="font-size: 12px; color: var(--gold); font-weight: 700;">● SATELLITE TELEMETRY LOCKED</span>
+      </div>
+
+      <div class="radar-split">
+        <!-- Radar Screen -->
+        <div class="master-radar-screen">
+          <div class="radar-grid-mesh"></div>
+          <div class="owner-ring or-1"></div>
+          <div class="owner-ring or-2"></div>
+          <div class="owner-ring or-3"></div>
+          <div class="owner-sweep"></div>
+
+          <!-- Depot Central Hub -->
+          <div class="depot-center-hub">
+            <i class="fa-solid fa-warehouse mr-1"></i> HPCL CENTRAL DEPOT (HQ)
+          </div>
+
+          <!-- Active Bowsers -->
+          <div class="moving-tanker t1" onclick="showTankerDetails('TK-101')">
+            <i class="fa-solid fa-truck"></i> TK-101 (42 km/h • Worli Flat 402)
+          </div>
+          <div class="moving-tanker t2" onclick="showTankerDetails('TK-102')">
+            <i class="fa-solid fa-truck"></i> TK-102 (38 km/h • Powai IT Park)
+          </div>
+          <div class="moving-tanker t3" onclick="showTankerDetails('TK-103')">
+            <i class="fa-solid fa-truck"></i> TK-103 (0 km/h • Depot Loading)
+          </div>
+
+          <!-- Emergency E-STOP Banner Overlay -->
+          <div class="estop-banner" id="estopBanner">
+            ⚠️ EMERGENCY FLEET CUTOFF ACTIVATED<br>
+            <span style="font-size: 13px; font-weight: 500;">ALL ATEX DISCHARGE VALVES LOCKED SHUT ACROSS GREATER MUMBAI</span>
+          </div>
+        </div>
+
+        <!-- Radar Action Controls & Pilot Leaderboard -->
+        <div class="radar-actions">
+          <button class="master-btn btn-gold" onclick="pingTransponders()">
+            <i class="fa-solid fa-satellite"></i> 📡 Ping All Tanker IoT Transponders
+          </button>
+
+          <button class="master-btn action-btn" style="padding: 14px; justify-content: center;" onclick="rerouteTraffic()">
+            <i class="fa-solid fa-route text-primary"></i> 🔄 WEH Traffic Auto-Reroute (-14 Mins)
+          </button>
+
+          <button class="master-btn btn-estop" id="btnEstop" onclick="toggleEstop()">
+            <i class="fa-solid fa-circle-exclamation"></i> 🛑 PESO EMERGENCY FLEET E-STOP
+          </button>
+
+          <!-- Pilot Safety Leaderboard Snippet -->
+          <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 14px; margin-top: 4px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; margin-bottom: 8px;">
+              🏆 Pilot Hazmat Safety Index
+            </div>
+            <div style="font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between;">
+              <span>🥇 Rajesh Kumar (TK-101)</span><strong style="color: var(--success);">98.4% • 0 Harsh Brakes</strong>
+            </div>
+            <div style="font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between;">
+              <span>🥈 Amit Patel (TK-102)</span><strong style="color: var(--primary-hover);">96.1% • 1 Harsh Brake</strong>
+            </div>
+            <div style="font-size: 12px; padding: 6px 0; display: flex; justify-content: space-between;">
+              <span>🥉 Suresh Shinde (TK-103)</span><strong style="color: var(--gold);">94.8% • Decanting</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fleet Table -->
+      <table style="margin-top: 22px;">
+        <thead><tr><th>Code</th><th>Vehicle Model</th><th>Product</th><th>Volume</th><th>Speed</th><th>Temp</th><th>PESO Calib</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><strong>TK-101</strong></td><td>Tata 2KL Micro-Dispenser</td><td>PETROL</td><td>1,480 / 2,000 L</td><td>42 km/h</td><td>24.2°C</td><td><strong style="color: var(--success);">100%</strong></td><td><button class="btn-sm btn-gold" onclick="alert('TK-101 telemetry synchronized!')">Sync</button></td></tr>
+          <tr><td><strong>TK-102</strong></td><td>Ashok Leyland 4KL Bowser</td><td>DIESEL</td><td>3,200 / 4,000 L</td><td>38 km/h</td><td>23.8°C</td><td><strong style="color: var(--success);">99.98%</strong></td><td><button class="btn-sm btn-gold" onclick="alert('TK-102 telemetry synchronized!')">Sync</button></td></tr>
+          <tr><td><strong>TK-103</strong></td><td>BharatBenz 6KL Heavy Unit</td><td>CNG</td><td>5,800 / 6,000 L</td><td>0 km/h</td><td>22.5°C</td><td><strong style="color: var(--success);">100%</strong></td><td><button class="btn-sm btn-gold" onclick="alert('TK-103 docked at depot!')">Dock</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB: CUSTOMER GRIEVANCE DESK -->
+    <div id="tabComplaints" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title">
+          <i class="fa-solid fa-bullhorn text-red-400"></i> Customer Grievance & Complaints Resolution Desk
+        </div>
+        <div style="font-size: 12px; color: var(--gold); font-weight: 700;">
+          Direct Real-Time Feed from Customer Dashboards
+        </div>
+      </div>
+
+      <!-- Grievance KPI Metrics Strip -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px;">
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Grievances</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--gold); font-family: 'JetBrains Mono', monospace;" id="totalGrievanceCount">5 Tickets</div>
+        </div>
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Action Required / Open</div>
+          <div style="font-size: 20px; font-weight: 800; color: #f87171; font-family: 'JetBrains Mono', monospace;" id="openGrievanceCount">2 Pending</div>
+        </div>
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Average Resolution Time</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--primary-hover); font-family: 'JetBrains Mono', monospace;">14 Mins</div>
+        </div>
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 12px 16px;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Adulteration / Purity Failures</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--success); font-family: 'JetBrains Mono', monospace;">0 (100% Pure)</div>
+        </div>
+      </div>
+
+      <!-- Filter Controls & Search -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-sm btn-gold" id="btnFilterAll" onclick="filterComplaints('ALL')">All Tickets (5)</button>
+          <button class="btn-sm" style="background: rgba(239,68,68,0.2); color: #f87171;" id="btnFilterOpen" onclick="filterComplaints('OPEN')">Open (1)</button>
+          <button class="btn-sm" style="background: rgba(14,165,233,0.2); color: var(--primary-hover);" id="btnFilterInv" onclick="filterComplaints('INVESTIGATING')">Investigating (2)</button>
+          <button class="btn-sm" style="background: rgba(16,185,129,0.2); color: var(--success);" id="btnFilterRes" onclick="filterComplaints('RESOLVED')">Resolved (2)</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="complaintSearchInput" placeholder="🔍 Search ticket #, customer, issue..." style="background: var(--bg-input); border: 1px solid var(--border-subtle); color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; width: 240px;" onkeyup="searchComplaints()">
+          <button class="btn-sm btn-gold" onclick="alert('Statutory PESO notification stream active: All resolution timestamps are immutably signed.')"><i class="fa-solid fa-file-shield"></i> PESO Compliance Audit</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket #</th>
+            <th>Customer & Contact</th>
+            <th>Issue Category</th>
+            <th>Severity</th>
+            <th>Description & Notes</th>
+            <th>Status</th>
+            <th>Station Owner Master Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ownerComplaintsTbody">
+          <tr id="row-tkt-8860" class="complaint-row" data-status="INVESTIGATING">
+            <td><strong style="color: var(--gold);">#FT-TKT-2026-8860</strong><br><span style="font-size: 10px; color: var(--text-muted);">Today 15:45</span></td>
+            <td><strong>Vikram Malhotra</strong> <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 800;">VIP DEMO</span><br><small style="color: var(--text-muted);">Penthouse 12B, Mahalaxmi (+91 98200 99999)</small></td>
+            <td><span style="background: rgba(245, 158, 11, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Express Route Priority</span></td>
+            <td><span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">HIGH</span></td>
+            <td>"Urgent fuel fill needed before airport departure; requested emergency priority bypass around WEH traffic."<br><span style="font-size: 11px; color: var(--primary-hover);"><i class="fa-solid fa-comment-dots"></i> Owner Note: Tanker TK-101 diverted via Senapati Bapat Marg. ETA 8 mins.</span></td>
+            <td><span class="status-chip chip-blue" id="status-8860">INVESTIGATING</span></td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn-sm btn-gold" onclick="alert('Tanker TK-101 siren emergency route approved via Senapati Bapat Marg. Saved 14 minutes.')"><i class="fa-solid fa-route"></i> Reroute</button>
+                <button class="btn-sm" style="background: rgba(255,255,255,0.08); color: white;" onclick="callCustomer('Vikram Malhotra', '+91 98200 99999')"><i class="fa-solid fa-phone"></i> Call</button>
+                <button class="btn-sm" style="background: var(--success); color: white;" onclick="resolveComplaint('FT-TKT-2026-8860', 'row-tkt-8860')"><i class="fa-solid fa-check"></i> Resolve</button>
+              </div>
+            </td>
+          </tr>
+          <tr id="row-tkt-8812" class="complaint-row" data-status="INVESTIGATING">
+            <td><strong style="color: var(--gold);">#FT-TKT-2026-8812</strong><br><span style="font-size: 10px; color: var(--text-muted);">Today 14:30</span></td>
+            <td><strong>Ananya Deshmukh</strong><br><small style="color: var(--text-muted);">Flat 402, Worli Sea Face (+91 98201 12345)</small></td>
+            <td><span style="background: rgba(14, 165, 233, 0.15); color: var(--primary-hover); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Density Verification</span></td>
+            <td><span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">HIGH</span></td>
+            <td>"Requested secondary density retest on Flat 402 delivery to cross-verify temperature compensation."<br><span style="font-size: 11px; color: var(--primary-hover);"><i class="fa-solid fa-comment-dots"></i> Owner Note: Inspector Rajesh assigned with calibrated hydrometer.</span></td>
+            <td><span class="status-chip chip-blue" id="status-8812">INVESTIGATING</span></td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn-sm btn-gold" onclick="dispatchRetest('FT-TKT-2026-8812', 'Ananya Deshmukh')"><i class="fa-solid fa-flask-vial"></i> Retest</button>
+                <button class="btn-sm" style="background: rgba(255,255,255,0.08); color: white;" onclick="callCustomer('Ananya Deshmukh', '+91 98201 12345')"><i class="fa-solid fa-phone"></i> Call</button>
+                <button class="btn-sm" style="background: var(--success); color: white;" onclick="resolveComplaint('FT-TKT-2026-8812', 'row-tkt-8812')"><i class="fa-solid fa-check"></i> Resolve</button>
+              </div>
+            </td>
+          </tr>
+          <tr id="row-tkt-8824" class="complaint-row" data-status="OPEN">
+            <td><strong style="color: var(--gold);">#FT-TKT-2026-8824</strong><br><span style="font-size: 10px; color: var(--text-muted);">Today 15:10</span></td>
+            <td><strong>Rahul Sharma</strong><br><small style="color: var(--text-muted);">Palms Residency, Bandra West (+91 98200 88219)</small></td>
+            <td><span style="background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Meter Dispute</span></td>
+            <td><span style="background: rgba(245, 158, 11, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">MEDIUM</span></td>
+            <td>"Nozzle auto-cutoff occurred early at 34.2L instead of 35L. Inquired about ₹83.36 refund credit."</td>
+            <td><span class="status-chip chip-blue" id="status-8824">OPEN</span></td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn-sm" style="background: var(--success); color: white;" onclick="issueRefund('FT-TKT-2026-8824', 'Rahul Sharma', 83.36, 'row-tkt-8824')"><i class="fa-solid fa-credit-card"></i> UPI Refund</button>
+                <button class="btn-sm" style="background: rgba(255,255,255,0.08); color: white;" onclick="callCustomer('Rahul Sharma', '+91 98200 88219')"><i class="fa-solid fa-phone"></i> Call</button>
+                <button class="btn-sm" style="background: var(--success); color: white;" onclick="resolveComplaint('FT-TKT-2026-8824', 'row-tkt-8824')"><i class="fa-solid fa-check"></i> Resolve</button>
+              </div>
+            </td>
+          </tr>
+          <tr id="row-tkt-8830" class="complaint-row" data-status="RESOLVED">
+            <td><strong style="color: var(--gold);">#FT-TKT-2026-8830</strong><br><span style="font-size: 10px; color: var(--text-muted);">Today 11:15</span></td>
+            <td><strong>Vikram Malhotra</strong> <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 800;">VIP DEMO</span><br><small style="color: var(--text-muted);">Penthouse 12B, Mahalaxmi (+91 98200 99999)</small></td>
+            <td><span style="background: rgba(14, 165, 233, 0.15); color: var(--primary-hover); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Density Verification</span></td>
+            <td><span style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">HIGH</span></td>
+            <td>"Requested secondary hydrometer density audit on 45L Petrol delivery."<br><span style="font-size: 11px; color: var(--success);"><i class="fa-solid fa-circle-check"></i> Resolution: PESO mobile lab verified 742.8 kg/m³. 100% BS-VI certified pure.</span></td>
+            <td><span class="status-chip" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">RESOLVED</span></td>
+            <td>
+              <button class="btn-sm" style="background: rgba(255,255,255,0.08); color: white;" onclick="alert('Cert #PESO-DEN-9941: Verified pure at 15°C temperature compensation.')"><i class="fa-solid fa-certificate"></i> View Certificate</button>
+            </td>
+          </tr>
+          <tr id="row-tkt-8845" class="complaint-row" data-status="RESOLVED">
+            <td><strong style="color: var(--gold);">#FT-TKT-2026-8845</strong><br><span style="font-size: 10px; color: var(--text-muted);">Today 13:40</span></td>
+            <td><strong>Vikram Malhotra</strong> <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 800;">VIP DEMO</span><br><small style="color: var(--text-muted);">Penthouse 12B, Mahalaxmi (+91 98200 99999)</small></td>
+            <td><span style="background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Meter Dispute</span></td>
+            <td><span style="background: rgba(245, 158, 11, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">MEDIUM</span></td>
+            <td>"Inquired about 0.8L auto cutoff differential on backup diesel generator."<br><span style="font-size: 11px; color: var(--success);"><i class="fa-solid fa-circle-check"></i> Resolution: Instant UPI refund of ₹83.36 credited. Ref: UPI-REF-9921.</span></td>
+            <td><span class="status-chip" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">RESOLVED</span></td>
+            <td>
+              <button class="btn-sm" style="background: rgba(255,255,255,0.08); color: white;" onclick="alert('Transaction Receipt: ₹83.36 credited via UPI. NPCI RRN: 699410291.')"><i class="fa-solid fa-receipt"></i> Refund Receipt</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB: CUSTOMER REVIEWS & CSAT WALL -->
+    <div id="tabFeedback" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title">
+          <i class="fa-solid fa-star text-amber-400"></i> Customer Delivery Reviews & CSAT Intelligence
+        </div>
+        <div style="font-size: 13px; color: var(--success); font-weight: 800;">
+          Overall Customer Satisfaction: 4.95 / 5.0 ★ (148 Deliveries Rated)
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 340px 1fr; gap: 20px;">
+        <!-- CSAT Overview & Metrics -->
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; text-align: center;">
+            <div style="font-size: 44px; font-weight: 900; color: var(--gold); font-family: 'JetBrains Mono', monospace;">4.95</div>
+            <div style="color: var(--gold); font-size: 20px; margin-bottom: 6px;">★★★★★</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Based on 148 verified doorstep fills in Mumbai</div>
+            <div style="text-align: left; font-size: 11px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between;"><span>5 Star (Exceptional):</span><strong style="color: var(--success);">94% (139)</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span>4 Star (Good):</span><strong style="color: var(--primary-hover);">5% (7)</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span>3 Star (Average):</span><strong>1% (2)</strong></div>
+              <div style="display: flex; justify-content: space-between;"><span>Net Promoter Score (NPS):</span><strong style="color: var(--success);">+88 (World Class)</strong></div>
+            </div>
+          </div>
+
+          <!-- Product CSAT Breakdown -->
+          <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; margin-bottom: 10px;">CSAT by Product Grade</div>
+            <div style="font-size: 12px; display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span>Speed Petrol:</span><strong style="color: var(--gold);">4.96 ★ (98% 5-Star)</strong>
+            </div>
+            <div style="font-size: 12px; display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span>Hi-Speed Diesel:</span><strong style="color: var(--gold);">4.94 ★ (96% 5-Star)</strong>
+            </div>
+            <div style="font-size: 12px; display: flex; justify-content: space-between;">
+              <span>Compressed Natural Gas:</span><strong style="color: var(--gold);">4.95 ★ (97% 5-Star)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Stream with Interactive Station Owner Reply Feature -->
+        <div style="display: flex; flex-direction: column; gap: 14px;" id="reviewsStreamList">
+          <!-- Review 1 -->
+          <div class="review-box" id="rev-box-1" style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+              <div>
+                <strong>Vikram Malhotra</strong> <span style="font-size: 10px; background: rgba(245,158,11,0.2); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 800;">VIP DEMO</span> • Lodha Bellissimo Penthouse
+              </div>
+              <span style="color: var(--gold); font-weight: 800;">★★★★★</span>
+            </div>
+            <div style="font-size: 11px; color: var(--primary-hover); margin-bottom: 6px;">Pilot: Rajesh Kumar (Tata 2KL TK-101) • 45L Speed Petrol • Ref #FT-ORD-2026-9901</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">"World-class doorstep refueling experience! Driver arrived in certified fire-retardant gear, verified the tamper seal on his tablet, and computerized nozzle flowed at exactly 45 L/min with zero odour."</p>
+            
+            <!-- Owner Reply Container -->
+            <div id="reply-container-1">
+              <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid var(--gold); border-radius: 6px; padding: 8px 12px; margin-bottom: 8px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 2px;"><i class="fa-solid fa-crown mr-1"></i> Official Station Owner Response:</div>
+                <div style="font-size: 11px; color: #e2e8f0;">"Thank you Mr. Malhotra! Your Mercedes GLS 450 deserves uncompromised BS-VI purity. Rajesh Kumar has been commended for his exemplary service."</div>
+              </div>
+            </div>
+
+            <button class="btn-sm" style="background: rgba(255,255,255,0.06); color: var(--gold);" onclick="replyToReview(1, 'Vikram Malhotra')">
+              <i class="fa-solid fa-reply"></i> Add Station Owner Reply
+            </button>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="review-box" id="rev-box-2" style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+              <div><strong>Ananya Deshmukh</strong> • Worli Sea Face</div>
+              <span style="color: var(--gold); font-weight: 800;">★★★★★</span>
+            </div>
+            <div style="font-size: 11px; color: var(--primary-hover); margin-bottom: 6px;">Pilot: Rajesh Kumar (Tata 2KL TK-101) • 35L Petrol • Ref #FT-ORD-2026-1001</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">"Super fast doorstep delivery! Rajesh showed me the PESO seal before opening the nozzle. Exactly 35.0 Litres dispensed with zero odor."</p>
+            
+            <div id="reply-container-2"></div>
+
+            <button class="btn-sm" style="background: rgba(255,255,255,0.06); color: var(--gold);" onclick="replyToReview(2, 'Ananya Deshmukh')">
+              <i class="fa-solid fa-reply"></i> Add Station Owner Reply
+            </button>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="review-box" id="rev-box-3" style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+              <div><strong>Vikramaditya Rao</strong> • Hiranandani Powai</div>
+              <span style="color: var(--gold); font-weight: 800;">★★★★★</span>
+            </div>
+            <div style="font-size: 11px; color: var(--primary-hover); margin-bottom: 6px;">Pilot: Amit Patel (Ashok Leyland 4KL TK-102) • 80L Diesel • Ref #FT-ORD-2026-0994</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">"Filled our backup diesel generator seamlessly. Meter was digital and computerized. No platform markup paid!"</p>
+            
+            <div id="reply-container-3"></div>
+
+            <button class="btn-sm" style="background: rgba(255,255,255,0.06); color: var(--gold);" onclick="replyToReview(3, 'Vikramaditya Rao')">
+              <i class="fa-solid fa-reply"></i> Add Station Owner Reply
+            </button>
+          </div>
+
+          <!-- Review 4 -->
+          <div class="review-box" id="rev-box-4" style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+              <div><strong>Rahul Sharma</strong> • Palms Residency, Bandra West</div>
+              <span style="color: var(--gold); font-weight: 800;">★★★★☆</span>
+            </div>
+            <div style="font-size: 11px; color: var(--primary-hover); margin-bottom: 6px;">Pilot: Rajesh Kumar (TK-101) • 34.2L Petrol • Ref #FT-ORD-2026-0988</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">"Delivery was on time. Auto cutoff stopped early by 0.8L but customer service refunded the difference promptly via UPI."</p>
+            
+            <div id="reply-container-4"></div>
+
+            <button class="btn-sm" style="background: rgba(255,255,255,0.06); color: var(--gold);" onclick="replyToReview(4, 'Rahul Sharma')">
+              <i class="fa-solid fa-reply"></i> Add Station Owner Reply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: BULK STORAGE -->
+    <div id="tabTanks" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title"><i class="fa-solid fa-database"></i> Depot Bulk Storage Reserves & Ultrasonic Sensors</div>
+        <button class="btn-sm btn-gold" onclick="refillStorage()"><i class="fa-solid fa-gas-pump"></i> ⚡ Bulk Pipeline Refill (Decant Tanks)</button>
+      </div>
+
+      <div class="tanks-grid">
+        <div class="tank-box">
+          <div class="tank-box-header"><span class="tank-name">Mumbai Petrol Tank 01</span><span class="tank-badge">ONLINE</span></div>
+          <div class="tank-bar-wrap"><div class="tank-bar-fill" id="fillMumPet" style="width: 84%;"></div></div>
+          <div class="tank-stat-row"><span>Stock:</span><strong id="stockMumPet">8,450 / 10,000 L</strong></div>
+          <div class="tank-stat-row"><span>Ultrasonic Level:</span><span>84.5% Depth</span></div>
+        </div>
+        <div class="tank-box">
+          <div class="tank-box-header"><span class="tank-name">Mumbai Diesel Tank 02</span><span class="tank-badge">ONLINE</span></div>
+          <div class="tank-bar-wrap"><div class="tank-bar-fill diesel" id="fillMumDie" style="width: 85%;"></div></div>
+          <div class="tank-stat-row"><span>Stock:</span><strong id="stockMumDie">12,800 / 15,000 L</strong></div>
+          <div class="tank-stat-row"><span>Ultrasonic Level:</span><span>85.3% Depth</span></div>
+        </div>
+        <div class="tank-box">
+          <div class="tank-box-header"><span class="tank-name">Mumbai CNG Pressure Cascade</span><span class="tank-badge">ONLINE</span></div>
+          <div class="tank-bar-wrap"><div class="tank-bar-fill" style="width: 77%;"></div></div>
+          <div class="tank-stat-row"><span>Stock:</span><strong>6,200 / 8,000 L</strong></div>
+          <div class="tank-stat-row"><span>Operating Pressure:</span><span>210 Bar</span></div>
+        </div>
+        <div class="tank-box">
+          <div class="tank-box-header"><span class="tank-name">Pune Reserve Tank 03</span><span class="tank-badge">ONLINE</span></div>
+          <div class="tank-bar-wrap"><div class="tank-bar-fill diesel" style="width: 76%;"></div></div>
+          <div class="tank-stat-row"><span>Stock:</span><strong>11,400 / 15,000 L</strong></div>
+          <div class="tank-stat-row"><span>Ultrasonic Level:</span><span>76.0% Depth</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CUSTOMER ORDERS STREAM -->
+    <div id="tabOrders" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title"><i class="fa-solid fa-clipboard-list"></i> Customer Orders Stream (Owner Status Override)</div>
+      </div>
+      <table>
+        <thead><tr><th>Order #</th><th>Customer</th><th>Product</th><th>Volume</th><th>Address</th><th>Total</th><th>Status (Override)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>FT-ORD-2026-9901</td>
+            <td>Vikram Malhotra (VIP Demo)</td>
+            <td>PETROL</td>
+            <td>45.0 L</td>
+            <td>Penthouse 12B, Lodha Bellissimo, Mahalaxmi, Mumbai</td>
+            <td><strong>₹4,739.45</strong></td>
+            <td>
+              <select style="background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 5px 10px; border-radius: 6px;" onchange="alert('Order status override transmitted to pilot transponder!')">
+                <option selected>DISPATCHED</option><option>IN_TRANSIT</option><option>DISPENSING</option><option>COMPLETED</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>FT-ORD-2026-1001</td>
+            <td>Ananya Deshmukh</td>
+            <td>PETROL</td>
+            <td>35.0 L</td>
+            <td>Flat 402, Sea Green Apts, Worli Sea Face, Mumbai</td>
+            <td><strong>₹3,697.35</strong></td>
+            <td>
+              <select style="background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 5px 10px; border-radius: 6px;" onchange="alert('Order status override transmitted to pilot transponder!')">
+                <option selected>DISPATCHED</option><option>IN_TRANSIT</option><option>DISPENSING</option><option>COMPLETED</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 4: REVENUE, MARGINS & PESO STATUTORY AUDIT -->
+    <div id="tabAnalytics" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Station Financial Intelligence & Daily PESO Safety Audit</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Financial Accounting -->
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+          <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--gold);"><i class="fa-solid fa-coins mr-1"></i> Revenue & Net Station Operating Margin</h4>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle);">
+            <span>Gross Fuel Sales (Day):</span><strong style="color: var(--text-main);">₹1,84,650.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle);">
+            <span>IOCL/BPCL Bulk Procurement Cost:</span><span style="color: #f87171;">- ₹1,58,200.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border-subtle);">
+            <span>Delivery Service Fees:</span><strong style="color: var(--primary-hover);">+ ₹14,200.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; padding: 10px 0; font-weight: 800; border-bottom: 1px solid var(--border-subtle);">
+            <span>Station Net Operating Profit:</span><strong style="color: var(--success); font-size: 16px;">+ ₹26,450.00 (14.3%)</strong>
+          </div>
+          <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted);">
+            Avg profit margin: ₹4.80/L on Speed Petrol, ₹3.90/L on Diesel, ₹5.20/L on CNG.
+          </div>
+        </div>
+
+        <!-- Statutory PESO Safety Inspection Checklist -->
+        <div style="background: var(--bg-card-alt); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px;">
+          <h4 style="font-size: 14px; margin-bottom: 12px; color: var(--gold);"><i class="fa-solid fa-clipboard-check mr-1"></i> Statutory PESO Daily Station Safety Checklist</h4>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked disabled> Underground Tanks Vapor Recovery Unit (VRU) Pressure Sealed</label>
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked disabled> Static Grounding Earthing Resistance &lt; 8.4 Ohms (PESO Standard &lt; 10 Ohms)</label>
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked disabled> Class-B Dry Chemical Fire Extinguishers Inspected &amp; Fully Charged</label>
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked disabled> Bowser Digital Flow-Meters Calibrated (±0.01% Weights &amp; Measures)</label>
+            <label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked disabled> Pilots Alcohol Breathalyzer &amp; Anti-Static Safety Gear Verified</label>
+          </div>
+          <button class="master-btn btn-gold" style="margin-top: 14px; padding: 10px;" onclick="alert('✅ Daily PESO Compliance Log signed and transmitted to Petroleum & Explosives Safety Organisation portal!')">
+            <i class="fa-solid fa-stamp"></i> Sign & Certify Daily PESO Audit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: FUEL RATES -->
+    <div id="tabRates" class="card" style="display: none;">
+      <div class="card-header-row">
+        <div class="card-title"><i class="fa-solid fa-tags"></i> Official Government Fuel Rates Management</div>
+      </div>
+      <table>
+        <thead><tr><th>City Hub</th><th>Fuel Product</th><th>Govt Certified Rate / L</th><th>Flat Fee</th><th>Platform Markup</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Mumbai Central</td><td><strong>PETROL</strong></td><td>₹104.21 / L</td><td>₹50.00</td><td><strong style="color: var(--success);">₹0.00 (Zero Fee)</strong></td><td><button class="btn-sm btn-gold" onclick="alert('Rate updated in IOCL/BPCL registry!')">Edit Rate</button></td></tr>
+          <tr><td>Mumbai Central</td><td><strong>DIESEL</strong></td><td>₹92.15 / L</td><td>₹50.00</td><td><strong style="color: var(--success);">₹0.00 (Zero Fee)</strong></td><td><button class="btn-sm btn-gold" onclick="alert('Rate updated in IOCL/BPCL registry!')">Edit Rate</button></td></tr>
+          <tr><td>Mumbai Central</td><td><strong>CNG</strong></td><td>₹86.50 / L</td><td>₹50.00</td><td><strong style="color: var(--success);">₹0.00 (Zero Fee)</strong></td><td><button class="btn-sm btn-gold" onclick="alert('Rate updated in IOCL/BPCL registry!')">Edit Rate</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="ownerSettingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--gold);"><i class="fa-solid fa-gear"></i> Owner Master Settings</h3>
+        <button class="action-btn" style="padding: 4px 8px;" onclick="closeOwnerSettings()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="form-group"><label class="form-label">Station Name</label><input type="text" id="cfgStationName" class="form-control" value="HPCL Central Fuel Terminal #402"></div>
+      <div class="form-group"><label class="form-label">Station Owner / Manager</label><input type="text" id="cfgOwnerName" class="form-control" value="Sanjay Mehta (Owner)"></div>
+      <div class="form-group"><label class="form-label">PESO License Code</label><input type="text" class="form-control" value="PESO-LIC-MH-2026-99201"></div>
+      <button class="master-btn btn-gold" style="margin-top: 10px;" onclick="saveOwnerSettings()">Save Preferences</button>
+    </div>
+  </div>
+
+  <script>
+    let isEstop = false;
+    let pendingComplaints = 2;
+
+    // Detect Demo vs Original Owner Account
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isDemo = urlParams.get('demo') === 'true' || localStorage.getItem('fueltrack_demo_owner') === 'true' || localStorage.getItem('fueltrack_demo_user') === 'owner';
+      const badge = document.getElementById('ownerMasterBadge');
+      const banner = document.getElementById('vipOwnerDemoBanner');
+
+      if (isDemo) {
+        if (badge) badge.innerHTML = '<i class="fa-solid fa-crown"></i> Rajeshwar Singhania (Master Owner Demo)';
+        if (banner) {
+          banner.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.15)); border: 1px solid rgba(245, 158, 11, 0.55); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 25px rgba(245, 158, 11, 0.18);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--gold); color: black; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">👑 MASTER OWNER DEMO LOADED</span>
+                <span style="font-size: 13px; font-weight: 700; color: #f8fafc;">Rajeshwar Singhania • Central Command HQ, Sion Petro Complex, Mumbai</span>
+                <button onclick="toggleOwnerDemoProfile()" class="action-btn" style="padding: 3px 10px; font-size: 11px; border-color: var(--gold); color: var(--gold); margin-left: 8px;">Switch Profile</button>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; font-size: 11px; font-weight: 700;">
+                <span style="color: var(--primary-hover);"><i class="fa-solid fa-truck-fast mr-1"></i> 3 Bowsers En Route</span>
+                <span style="color: var(--text-muted);">|</span>
+                <span style="color: var(--success);"><i class="fa-solid fa-gas-pump mr-1"></i> 4 Bulk Reserves (37,450L)</span>
+                <span style="color: var(--text-muted);">|</span>
+                <span style="color: #f87171;"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 3 Active Tickets</span>
+                <span style="color: var(--text-muted);">|</span>
+                <span style="color: var(--gold);"><i class="fa-solid fa-star mr-1"></i> 4.95/5.0 CSAT Score</span>
+              </div>
+            </div>`;
+        }
+      } else {
+        if (badge) badge.innerHTML = '<i class="fa-solid fa-gas-pump"></i> Sanjay Mehta (Station Owner • Terminal #402)';
+        if (banner) {
+          banner.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(16, 185, 129, 0.15)); border: 1px solid rgba(14, 165, 233, 0.5); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 25px rgba(14, 165, 233, 0.18);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; font-weight: 900; font-size: 11px; padding: 4px 10px; border-radius: 6px;">⛽ STATION OWNER COCKPIT</span>
+                <span style="font-size: 13px; font-weight: 700; color: #f8fafc;">Sanjay Mehta • HPCL Central Terminal #402, Sion Petro Zone, Mumbai</span>
+                <button onclick="toggleOwnerDemoProfile()" class="action-btn" style="padding: 3px 10px; font-size: 11px; border-color: var(--primary); color: var(--primary-hover); margin-left: 8px;">Switch to VIP Demo</button>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; font-size: 11px; font-weight: 700;">
+                <span style="color: var(--primary-hover);"><i class="fa-solid fa-truck mr-1"></i> 3 Bowsers Monitored</span>
+                <span style="color: var(--text-muted);">|</span>
+                <span style="color: var(--success);"><i class="fa-solid fa-gauge-high mr-1"></i> All Tanks Online</span>
+                <span style="color: var(--text-muted);">|</span>
+                <span style="color: var(--gold);"><i class="fa-solid fa-star mr-1"></i> 4.95 ★ CSAT Rating</span>
+              </div>
+            </div>`;
+        }
+      }
+    });
+
+    function toggleOwnerDemoProfile() {
+      const isDemo = localStorage.getItem('fueltrack_demo_owner') === 'true';
+      if (isDemo) {
+        localStorage.removeItem('fueltrack_demo_owner');
+        window.location.href = 'owner-dashboard.html';
+      } else {
+        localStorage.setItem('fueltrack_demo_owner', 'true');
+        window.location.href = 'owner-dashboard.html?demo=true';
+      }
+    }
+
+    function showTab(id) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      } else {
+        const btn = document.querySelector(`.tab-btn[onclick*="${id}"]`);
+        if (btn) btn.classList.add('active');
+      }
+      ['tabRadar', 'tabComplaints', 'tabFeedback', 'tabTanks', 'tabOrders', 'tabAnalytics', 'tabRates'].forEach(tab => {
+        const el = document.getElementById(tab);
+        if (el) el.style.display = (tab === id) ? 'block' : 'none';
+      });
+    }
+
+    // Complaints Filtering
+    function filterComplaints(status) {
+      const rows = document.querySelectorAll('.complaint-row');
+      rows.forEach(r => {
+        if (status === 'ALL' || r.getAttribute('data-status') === status) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+      document.querySelectorAll('#btnFilterAll, #btnFilterOpen, #btnFilterInv, #btnFilterRes').forEach(b => b.style.opacity = '0.6');
+      if (status === 'ALL') document.getElementById('btnFilterAll').style.opacity = '1.0';
+      if (status === 'OPEN') document.getElementById('btnFilterOpen').style.opacity = '1.0';
+      if (status === 'INVESTIGATING') document.getElementById('btnFilterInv').style.opacity = '1.0';
+      if (status === 'RESOLVED') document.getElementById('btnFilterRes').style.opacity = '1.0';
+    }
+
+    // Search complaints
+    function searchComplaints() {
+      const input = document.getElementById('complaintSearchInput');
+      const q = input ? input.value.toLowerCase() : '';
+      const rows = document.querySelectorAll('.complaint-row');
+      rows.forEach(r => {
+        const text = (r.innerText || '').toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // Reply to Customer Review
+    function replyToReview(reviewId, customerName) {
+      const resp = prompt(`Enter official Station Owner response to ${customerName}'s review:`, "Thank you for trusting FuelTrack! We are committed to uncompromised BS-VI purity and precision dispensing.");
+      if (resp && resp.trim().length > 0) {
+        const container = document.getElementById('reply-container-' + reviewId);
+        if (container) {
+          container.innerHTML = `
+            <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid var(--gold); border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; animation: fadeIn 0.3s ease;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 2px;">
+                <i class="fa-solid fa-crown mr-1"></i> Official Station Owner Response (Just Now):
+              </div>
+              <div style="font-size: 11px; color: #e2e8f0;">"${resp.trim()}"</div>
+            </div>`;
+        }
+        alert(`✅ Official Owner Response published for ${customerName}! It is now visible on the customer dashboard.`);
+      }
+    }
+
+    function dispatchRetest(tkt, cust) {
+      alert(`🔬 Quality Inspection Dispatched!\nTicket #${tkt}\nPilot Rajesh Kumar has been dispatched with a portable hydrometer to re-verify fuel density for ${cust}.`);
+      const cleanTkt = String(tkt).replace(/[^0-9]/g, '');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-' + cleanTkt) || document.getElementById('status-8812');
+      if (st) { st.innerText = 'DISPATCHED_TEST'; st.className = 'status-chip chip-blue'; }
+    }
+
+    function issueRefund(tkt, cust, amt, rowId) {
+      alert(`💳 Instant UPI Refund Processed!\nTicket #${tkt}\nAmount: ₹${amt.toFixed(2)}\nCredited to ${cust}'s UPI Virtual Payment Address.`);
+      const cleanTkt = String(tkt).replace(/[^0-9]/g, '');
+      const st = document.getElementById('status-' + tkt) || document.getElementById('status-' + cleanTkt) || document.getElementById('status-8824');
+      if (st) { st.innerText = 'REFUNDED_RESOLVED'; st.style.background = 'rgba(16, 185, 129, 0.2)'; st.style.color = '#10b981'; }
+      if (rowId) {
+        const row = document.getElementById(rowId);
+        if (row && typeof row.setAttribute === 'function') { row.setAttribute('data-status', 'RESOLVED'); }
+      }
+      pendingComplaints = Math.max(0, pendingComplaints - 1);
+      const countEl = document.getElementById('ownerComplaintCount');
+      if (countEl) countEl.innerText = pendingComplaints;
+      const badgeEl = document.getElementById('openGrievanceCount');
+      if (badgeEl) badgeEl.innerText = pendingComplaints + ' Pending';
+    }
+
+    function resolveComplaint(tkt, rowId) {
+      const note = prompt("Enter resolution notes for customer SMS:", "Issue verified and rectified as per PESO SOP.");
+      if (note) {
+        alert(`✅ Ticket #${tkt} Marked RESOLVED!\nCustomer notified with resolution notes:\n"${note}"`);
+        const row = document.getElementById(rowId);
+        if (row) {
+          row.style.opacity = '0.6';
+          row.setAttribute('data-status', 'RESOLVED');
+          const chips = row.querySelectorAll('.status-chip');
+          chips.forEach(c => { c.innerText = 'RESOLVED'; c.style.background = 'rgba(16, 185, 129, 0.2)'; c.style.color = '#10b981'; });
+        }
+        pendingComplaints = Math.max(0, pendingComplaints - 1);
+        const countEl = document.getElementById('ownerComplaintCount');
+        if (countEl) countEl.innerText = pendingComplaints;
+        const badgeEl = document.getElementById('openGrievanceCount');
+        if (badgeEl) badgeEl.innerText = pendingComplaints + ' Pending';
+      }
+    }
+
+    function callCustomer(name, phone) {
+      alert(`📞 Dialing ${name} at ${phone} via Station Owner Telematics line...`);
+    }
+
+    function pingTransponders() {
+      alert("📡 SATELLITE BEACON DIAGNOSTIC REPORT\n---------------------------------------------------\n• Tanker MH-01-TK-101: 14ms | Lat 18.9986, Lon 72.8174 | GPS Locked\n• Tanker MH-02-TK-102: 18ms | Lat 19.1176, Lon 72.9060 | GPS Locked\n• Tanker MH-03-TK-103: 11ms | Docked at Central Terminal\n\nAll 3 mobile transponders online with 0% packet loss.");
+    }
+
+    function rerouteTraffic() {
+      alert("🚦 Smart WEH Traffic Reroute:\n\nTK-101 diverted via Senapati Bapat Marg.\nSaved 14 minutes in delivery ETA to Worli Sea Face!");
+    }
+
+    function toggleEstop() {
+      isEstop = !isEstop;
+      const banner = document.getElementById('estopBanner');
+      const btn = document.getElementById('btnEstop');
+      if (isEstop) {
+        banner.style.display = 'block';
+        btn.innerText = '✅ RESET EMERGENCY SHUTOFF';
+        alert("🚨 EMERGENCY FLEET SHUTDOWN TRANSMITTED!\nAll ATEX solenoid safety valves locked shut.");
+      } else {
+        banner.style.display = 'none';
+        btn.innerText = '🛑 PESO EMERGENCY FLEET E-STOP';
+        alert("System restored to normal operational parameters.");
+      }
+    }
+
+    function showTankerDetails(code) {
+      if (code === 'TK-101') {
+        alert("🚚 Bowsers TK-101 (Tata 2KL Micro-Dispenser)\n• Driver: Rajesh Kumar\n• Fuel: Petrol (1,480L)\n• Speed: 42.4 km/h\n• Route: Central Depot -> Worli Flat 402\n• Delivery PIN: 8492");
+      } else if (code === 'TK-102') {
+        alert("🚚 Bowsers TK-102 (Ashok Leyland 4KL)\n• Driver: Amit Patel\n• Fuel: Diesel (3,200L)\n• Speed: 38.0 km/h\n• Route: Central Depot -> Powai IT SEZ");
+      } else {
+        alert("🚚 Bowsers TK-103 (BharatBenz 6KL)\n• Driver: Suresh Shinde\n• Fuel: CNG (5,800L)\n• Status: Docked at HPCL Central Terminal");
+      }
+    }
+
+    function refillStorage() {
+      document.getElementById('fillMumPet').style.width = '95%';
+      document.getElementById('stockMumPet').innerText = '9,500 / 10,000 L';
+      document.getElementById('fillMumDie').style.width = '95%';
+      document.getElementById('stockMumDie').innerText = '14,250 / 15,000 L';
+      document.getElementById('totalStock').innerText = '45,800 L';
+      alert("✅ Bulk Storage Decanting Complete!\nDepot reserves replenished to 95% safety volume.");
+    }
+
+    function openOwnerSettings() { document.getElementById('ownerSettingsModal').classList.add('open'); }
+    function closeOwnerSettings() { document.getElementById('ownerSettingsModal').classList.remove('open'); }
+    function saveOwnerSettings() {
+      closeOwnerSettings();
+      alert('Master preferences updated!');
+    }
+    function logout() {
+      localStorage.removeItem('fueltrack_demo_owner');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

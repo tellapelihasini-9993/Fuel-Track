@@ -526,17 +526,49 @@ public class FuelTrackApp extends JFrame {
             String path = exchange.getRequestURI().getPath();
 
             if (path.equals("/") || path.isEmpty()) {
+                File f = resolveFile("login.html");
+                if (f.exists()) {
+                    serveDiskFile(exchange, f, "text/html; charset=utf-8");
+                    return;
+                }
                 serveEmbeddedDashboard(exchange);
                 return;
             }
-            if (path.equals("/index.html") || path.equals("/login.html") || path.equals("/user-dashboard.html") || path.equals("/owner-dashboard.html")
-                    || path.equals("/login") || path.equals("/user") || path.equals("/owner") || path.equals("/project1.html") || path.equals("/landing")) {
-                File f = resolveFile(path.startsWith("/") ? path.substring(1) : path);
-                if (f != null && f.exists() && !f.isDirectory()) {
+            if (path.equals("/index.html") || path.equals("/landing") || path.equals("/project1.html")) {
+                File f = resolveFile("index.html");
+                if (!f.exists()) f = resolveFile("project1.html");
+                if (f.exists()) {
                     serveDiskFile(exchange, f, "text/html; charset=utf-8");
-                } else {
-                    serveEmbeddedDashboard(exchange);
+                    return;
                 }
+                serveEmbeddedDashboard(exchange);
+                return;
+            }
+            if (path.equals("/login") || path.equals("/login.html")) {
+                File f = resolveFile("login.html");
+                if (f.exists()) {
+                    serveDiskFile(exchange, f, "text/html; charset=utf-8");
+                    return;
+                }
+                serveEmbeddedDashboard(exchange);
+                return;
+            }
+            if (path.equals("/user") || path.equals("/user-dashboard.html") || path.equals("/customer") || path.equals("/tracker")) {
+                File f = resolveFile("user-dashboard.html");
+                if (f.exists()) {
+                    serveDiskFile(exchange, f, "text/html; charset=utf-8");
+                    return;
+                }
+                serveEmbeddedDashboard(exchange);
+                return;
+            }
+            if (path.equals("/owner") || path.equals("/owner-dashboard.html") || path.equals("/master")) {
+                File f = resolveFile("owner-dashboard.html");
+                if (f.exists()) {
+                    serveDiskFile(exchange, f, "text/html; charset=utf-8");
+                    return;
+                }
+                serveEmbeddedDashboard(exchange);
                 return;
             }
 
@@ -583,18 +615,18 @@ public class FuelTrackApp extends JFrame {
 
         httpServer.start();
         System.out.println("============================================================================");
-        System.out.println("  FuelTrack Pure Java Command Engine LIVE at: http://localhost:" + activePort);
+        System.out.println("  FuelTrack Multi-Page Localhost Web Engine LIVE at: http://localhost:" + activePort);
         System.out.println("============================================================================");
-        System.out.println("  [1] Web Command Center: http://localhost:" + activePort + "/");
-        System.out.println("  [2] Fleet Tankers API:  http://localhost:" + activePort + "/api/tankers");
-        System.out.println("  [3] Realtime Rates API: http://localhost:" + activePort + "/api/rates");
-        System.out.println("  [4] Orders & Status:    http://localhost:" + activePort + "/api/orders");
+        System.out.println("  [1] Login Portal:       http://localhost:" + activePort + "/login.html");
+        System.out.println("  [2] Customer Portal:    http://localhost:" + activePort + "/user-dashboard.html?demo=true");
+        System.out.println("  [3] Station Owner Hub:  http://localhost:" + activePort + "/owner-dashboard.html?demo=true");
+        System.out.println("  [4] Main Landing Page:  http://localhost:" + activePort + "/index.html");
         System.out.println("============================================================================");
-        System.out.println("  >> Opening your default browser to http://localhost:" + activePort + "/ ...");
+        System.out.println("  >> Opening your default browser to http://localhost:" + activePort + "/login.html ...");
         System.out.println("============================================================================");
 
-        // Automatically open the browser to the web command center
-        openBrowser("http://localhost:" + activePort + "/");
+        // Automatically open the browser to the login portal
+        openBrowser("http://localhost:" + activePort + "/login.html");
     }
 
     public static void openBrowser(String url) {
@@ -889,44 +921,44 @@ public class FuelTrackApp extends JFrame {
                 new EmptyBorder(8, 16, 8, 16)
         ));
 
-        JLabel title = new JLabel("<html><span style='color:#38bdf8; font-weight:bold;'>🌐 PURE JAVA SERVER:</span> <span style='color:#f8fafc; font-weight:bold;'>http://localhost:" + activePort + "/</span></html>");
+        JLabel title = new JLabel("<html><span style='color:#38bdf8; font-weight:bold;'>🌐 EMBEDDED LOCALHOST WEB SERVER:</span> <span style='color:#f8fafc; font-weight:bold;'>http://localhost:" + activePort + "/login.html</span></html>");
         title.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         btnPanel.setOpaque(false);
 
-        JButton openWebBtn = new JButton("🌐 Web Command Center");
+        JButton openWebBtn = new JButton("🚀 Open Web Login in Browser");
         openWebBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         openWebBtn.setBackground(COLOR_PRIMARY);
         openWebBtn.setForeground(Color.WHITE);
         openWebBtn.setFocusPainted(false);
-        openWebBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/"));
+        openWebBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/login.html"));
 
-        JButton openTankersBtn = new JButton("🚛 Fleet Tankers API");
-        openTankersBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        openTankersBtn.setBackground(COLOR_SURFACE_ALT);
-        openTankersBtn.setForeground(COLOR_TEXT_PRIMARY);
-        openTankersBtn.setFocusPainted(false);
-        openTankersBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/api/tankers"));
+        JButton openCustBtn = new JButton("👤 Customer Web Portal");
+        openCustBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        openCustBtn.setBackground(COLOR_SURFACE_ALT);
+        openCustBtn.setForeground(COLOR_TEXT_PRIMARY);
+        openCustBtn.setFocusPainted(false);
+        openCustBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/user-dashboard.html?demo=true"));
 
-        JButton openRatesBtn = new JButton("💰 Live Rates API");
-        openRatesBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        openRatesBtn.setBackground(COLOR_SURFACE_ALT);
-        openRatesBtn.setForeground(COLOR_GOLD);
-        openRatesBtn.setFocusPainted(false);
-        openRatesBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/api/rates"));
+        JButton openOwnerBtn = new JButton("👑 Owner Master Cockpit");
+        openOwnerBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        openOwnerBtn.setBackground(COLOR_SURFACE_ALT);
+        openOwnerBtn.setForeground(COLOR_GOLD);
+        openOwnerBtn.setFocusPainted(false);
+        openOwnerBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/owner-dashboard.html?demo=true"));
 
-        JButton openOrdersBtn = new JButton("📦 Orders API");
-        openOrdersBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        openOrdersBtn.setBackground(COLOR_SURFACE_ALT);
-        openOrdersBtn.setForeground(COLOR_TEXT_SECONDARY);
-        openOrdersBtn.setFocusPainted(false);
-        openOrdersBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/api/orders"));
+        JButton openLandingBtn = new JButton("🏠 Landing Page");
+        openLandingBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        openLandingBtn.setBackground(COLOR_SURFACE_ALT);
+        openLandingBtn.setForeground(COLOR_TEXT_SECONDARY);
+        openLandingBtn.setFocusPainted(false);
+        openLandingBtn.addActionListener(e -> openBrowser("http://localhost:" + activePort + "/index.html"));
 
         btnPanel.add(openWebBtn);
-        btnPanel.add(openTankersBtn);
-        btnPanel.add(openRatesBtn);
-        btnPanel.add(openOrdersBtn);
+        btnPanel.add(openCustBtn);
+        btnPanel.add(openOwnerBtn);
+        btnPanel.add(openLandingBtn);
 
         bar.add(title, BorderLayout.WEST);
         bar.add(btnPanel, BorderLayout.EAST);
