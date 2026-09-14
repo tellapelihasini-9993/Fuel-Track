@@ -1,0 +1,22 @@
+{
+  "name": "fueltrack",
+  "version": "2.2.0",
+  "description": "FuelTrack - Automated Fuel Logistics & IoT Smart Tanker Fleet Management System",
+  "main": "FuelTrackApp.java",
+  "scripts": {
+    "dev": "java -jar FuelTrackApp.jar",
+    "start": "java -jar FuelTrackApp.jar",
+    "build": "javac -encoding UTF-8 FuelTrackApp.java && jar cvfm FuelTrackApp.jar manifest.txt *.class",
+    "clean": "powershell -Command \"Remove-Item -Force -ErrorAction SilentlyContinue *.class\""
+  },
+  "keywords": [
+    "java",
+    "cse203",
+    "fueltrack",
+    "fleet-management",
+    "jdbc",
+    "oop"
+  ],
+  "author": "Hasini Tellapeli",
+  "license": "MIT"
+}
