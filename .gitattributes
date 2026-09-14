@@ -1,0 +1,4 @@
+# Force GitHub to calculate repository language as 100% Java
+* linguist-detectable=false
+*.java linguist-detectable=true
+*.java linguist-language=Java
